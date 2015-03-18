@@ -95,8 +95,6 @@ public class MIS_Project extends ApplicationTemplate
 			//				
 			//			}
 
-			///sadasdf
-		
 			//userRole = dah.getrole();
 
 			MarkerLayer layer = this.buildTracksLayer();
