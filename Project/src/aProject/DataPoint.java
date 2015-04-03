@@ -4,7 +4,6 @@ package aProject;
 import java.util.Date;
 
 public class DataPoint extends Point{
-	private int caseID;
 	private int caseNumber;
 	private CaseType theCaseType;
 	private Date theDate;
@@ -13,15 +12,31 @@ public class DataPoint extends Point{
 	 * @param caseNumber
 	 * @param type
 	 * @param theDate
+	 * @param latitude
+	 * @param longitude
 	 */
-	public DataPoint(int caseID, int caseNumber, CaseType type, Date theDate, double latitude, double longitude) {
+	public DataPoint(int caseNumber, CaseType type, Date theDate, double latitude, double longitude) {
 		super(latitude,longitude,0);
-		this.caseID = caseID;
 		this.caseNumber = caseNumber;
 		this.theCaseType = type;
 		this.theDate = theDate;
 	}//end constructor
 
+	/**
+	 * @param caseNumber
+	 * @param type
+	 * @param theDate
+	 * @param latitude
+	 * @param longitude
+	 * @param elevation 
+	 */
+	public DataPoint(int caseNumber, CaseType type, Date theDate, double latitude, double longitude, double elevation) {
+		super(latitude,longitude,elevation);
+		this.caseNumber = caseNumber;
+		this.theCaseType = type;
+		this.theDate = theDate;
+	}//end constructor
+	
 	/**
 	 * @return the caseNumber
 	 */
@@ -68,7 +83,7 @@ public class DataPoint extends Point{
 	 * @Override theDate the theDate to set
 	 */
 	public String toString() {
-		String temp = String.format("%2s %10s %10s %10s %5.2f %5.2f",caseID, caseNumber, theCaseType, theDate, this.getLatitude(), this.getLongitude());
+		String temp = String.format("%10s %10s %10s %5.2f %5.2f %5.2f", caseNumber, theCaseType, theDate, this.getLatitude(), this.getLongitude(), this.getElevation());
 		return temp;
 	} 
 	

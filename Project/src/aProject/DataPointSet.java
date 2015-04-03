@@ -2,8 +2,10 @@ package aProject;
 
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.MarkerLayer;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.markers.BasicMarker;
 import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
+import gov.nasa.worldwind.render.markers.BasicMarkerShape;
 import gov.nasa.worldwind.render.markers.Marker;
 
 import java.io.File;
@@ -57,9 +59,30 @@ public class DataPointSet {
 	/**
 	 * @param dp the DataPoint to add to the ArrayList
 	 */
-	public void addData(DataPoint dp){
+	public void addDataPoint(DataPoint dp){
 		dataSet.add(dp);
 	}//end addData
+
+	/**
+	 * @param index return the DataPoint at index
+	 */
+	public DataPoint getDataPoint(String index){
+		return dataSet.get(Integer.parseInt(index));
+	}//end getDataPoint
+
+	/**
+	 * @param index return the DataPoint at index
+	 */
+	public DataPoint getDataPoint(int index){
+		return dataSet.get(index);
+	}//end getDataPoint
+
+	/**
+	 *@Override
+	 */
+	public void clear(){
+		dataSet.clear();
+	}
 
 	/**
 	 * @param thefile the file name of the csv data
@@ -70,38 +93,40 @@ public class DataPointSet {
 	 *        ID, caseNumber, caseType, MM/dd/yyyy, longitude, latitude, (need elevation)
 	 *        
 	 */
-	public void parseDataFrom(File theFile){
-		int caseID;         
+	public void parseDataFrom(File theFile){       
 		int caseNum;        
 		CaseType type;        
 		Date thedateinput = null;  
 		double longitude;   
-		double latitude;    
+		double latitude; 
+		double elevation;   
 
 		SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 		try{
 			//Get scanner instance
-			Scanner scanner = new Scanner(theFile);
+			Scanner outerScanner = new Scanner(theFile);
+			Scanner innerScanner = null;
 
-			//Set the delimiter used in file
-			scanner.useDelimiter(",");
 
 			//Get all tokens and store them in some data structure
 			//I am just printing them
-			while (scanner.hasNext()){
+			while (outerScanner.hasNext()){
 				try{
-					caseID = scanner.nextInt();
-					caseNum = scanner.nextInt();
-					type = CaseType.setType(scanner.next());
+					innerScanner = new Scanner(outerScanner.nextLine());
+					//Set the delimiter used in file
+					innerScanner.useDelimiter(",");
+					caseNum = innerScanner.nextInt();
+					type = CaseType.setType(innerScanner.next());
 					try {	 
-						thedateinput = (Date)formatter.parse(scanner.next());			 
+						thedateinput = (Date)formatter.parse(innerScanner.next());			 
 					} catch (ParseException e) {
 						JOptionPane.showMessageDialog(null, "Error parsing date. " + e.toString());
 					}
-					longitude = scanner.nextDouble();
-					latitude = scanner.nextDouble();
+					longitude = innerScanner.nextDouble();
+					latitude = innerScanner.nextDouble();
+					elevation = innerScanner.nextDouble();
 
-					dataSet.add(new DataPoint(caseID, caseNum, type, thedateinput, latitude, longitude));
+					dataSet.add(new DataPoint(caseNum, type, thedateinput, latitude, longitude, elevation));
 				}catch(Exception e){
 					JOptionPane.showMessageDialog(null, "Error parsing CSV file. " + e.toString());
 					break;
@@ -109,7 +134,8 @@ public class DataPointSet {
 			}//end while
 
 			//Do not forget to close the scanner  
-			scanner.close();
+			outerScanner.close();
+			innerScanner.close();
 
 			System.out.println(this.toString());   //debugging here. remove me later
 
@@ -119,25 +145,83 @@ public class DataPointSet {
 
 	}//end parseData
 
+	/**
+	 * @Override toString()
+	 */
 	protected MarkerLayer createPlotData()
 	{
 		ArrayList<Marker> markers = new ArrayList<Marker>();
 		Marker a_marker= null;
+		BasicMarkerAttributes redSphere = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.SPHERE, 1d);
+		BasicMarkerAttributes greenSphere = new BasicMarkerAttributes(Material.GREEN, BasicMarkerShape.SPHERE, 1d);
 		
 		for(DataPoint a : dataSet){
-			a_marker = new BasicMarker(Position.fromDegrees(a.getLatitude(), a.getLongitude()), new BasicMarkerAttributes());
+			if(a.getCaseType().equals(CaseType.PEDESTRIAN)){
+				a_marker = new BasicMarker(Position.fromDegrees(a.getLatitude(), a.getLongitude()), redSphere);
+			}else if(a.getCaseType().equals(CaseType.BICYCLE)){
+				a_marker = new BasicMarker(Position.fromDegrees(a.getLatitude(), a.getLongitude()),greenSphere);
+			}
 			markers.add(a_marker);
 		} //end for
 
 		MarkerLayer layer = new MarkerLayer(markers);
-		
+
 		layer.setOverrideMarkerElevation(true);
+		layer.setKeepSeparated(false);                //turns off render batching 
 		layer.setElevation(0);
 		layer.setEnablePickSizeReturn(true);
 
 		return layer;
 
 	}//end createPlotData
+
+	/**
+	 * @Override toString()
+	 */
+	protected MarkerLayer createPlotData(CaseType filterType)
+	{
+		ArrayList<Marker> markers = new ArrayList<Marker>();
+		Marker a_marker= null;
+		BasicMarkerAttributes redSphere = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.SPHERE, 1d);
+		BasicMarkerAttributes greenSphere = new BasicMarkerAttributes(Material.GREEN, BasicMarkerShape.SPHERE, 1d);
+		
+		int i = 0;
+		
+		
+		for(DataPoint a : dataSet){
+			switch (filterType){
+			case PEDESTRIAN :
+				if(a.getCaseType().equals(filterType)){
+					a_marker = new BasicMarker(Position.fromDegrees(a.getLatitude(), a.getLongitude()), redSphere);
+					markers.add(a_marker);
+					i++;
+				}
+				break;
+			case BICYCLE:
+				if(a.getCaseType().equals(filterType)){
+					a_marker = new BasicMarker(Position.fromDegrees(a.getLatitude(), a.getLongitude()),greenSphere);
+					markers.add(a_marker);
+					i++;
+				}
+				break;
+			default:
+				break;
+			}//end case statement
+			
+		} //end for
+		
+		System.out.println("There are " + i + " " + filterType);
+		
+		MarkerLayer layer = new MarkerLayer(markers);
+
+		layer.setOverrideMarkerElevation(true);
+		layer.setKeepSeparated(false);                //turns off render batching 
+		layer.setElevation(0);
+		layer.setEnablePickSizeReturn(true);
+	
+		return layer;
+
+	}//end createPlotData(CaseType filterType)
 
 	/**
 	 * @Override toString()

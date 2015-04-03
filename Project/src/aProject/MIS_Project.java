@@ -8,6 +8,7 @@ package aProject;
 import gbl.Anchor;
 import gbl.Fill;
 import gbl.GBConstraints;
+import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.event.*;
 import gov.nasa.worldwind.formats.gpx.GpxReader;
@@ -16,6 +17,7 @@ import gov.nasa.worldwind.layers.MarkerLayer;
 import gov.nasa.worldwind.pick.PickedObject;
 import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.markers.*;
+import gov.nasa.worldwind.util.PlacemarkClutterFilter;
 import gov.nasa.worldwind.util.WWIO;
 import gov.nasa.worldwindx.examples.ApplicationTemplate;
 
@@ -41,6 +43,7 @@ import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.DateFormatter;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -77,15 +80,27 @@ import java.util.Date;
  */
 public class MIS_Project extends ApplicationTemplate
 {
-	protected static final String TRACK_PATH = "gov/nasa/worldwindx/examples/data/tuolumne.gpx";
 
 	protected static class AppFrame extends ApplicationTemplate.AppFrame implements ActionListener{
+
+		private JTextField caseNumber; 
+		private JTextField caseType;  
+		private JTextField caseDate; 
+		private JTextField caseLong;   
+		private JTextField caseLat;   
+		private JTextField elevation; 
 
 		private JDatePickerImpl endDatePicker;
 		private JDatePickerImpl beginDatePicker;
 		private JCheckBox pedestrians;
 		private JCheckBox cyclists;
 		private DataPointSet crashData;
+
+		private Date beginDate; 
+		private Date endDate;
+
+		private MarkerLayer cyclistsLayer = null;
+		private MarkerLayer pedestriansLayer = null;
 
 		/**
 		 * Overloads the no argument AppFrame() constructor
@@ -106,32 +121,25 @@ public class MIS_Project extends ApplicationTemplate
 
 			crashData = new DataPointSet();
 
-			//MarkerLayer layer = this.buildTracksLayer();
-			//insertBeforeCompass(this.getWwd(), layer);
+
+			try {
+				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+				beginDate = dateFormatter.parse("2000-01-01");
+				endDate = dateFormatter.parse(LocalDate.now().toString());
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 
 			//case 
 			createMenuBar();
 			this.getContentPane().add(createfilterPanel(),BorderLayout.EAST);
 			this.getContentPane().add(createDetailsPanel(), BorderLayout.WEST);
+
 			//this.getDatabasePane();
 
-			this.getWwd().addSelectListener(new SelectListener()
-			{
-				public void selected(SelectEvent event)
-				{
-					if (event.getTopObject() != null)
-					{
-						if (event.getTopPickedObject().getParentLayer() instanceof MarkerLayer)
-						{
-							PickedObject po = event.getTopPickedObject();
-							//noinspection RedundantCast
-							System.out.printf("Track position %s, %s, size = %f\n",
-									po.getValue(AVKey.PICKED_OBJECT_ID).toString(),
-									po.getPosition(), (Double) po.getValue(AVKey.PICKED_OBJECT_SIZE));
-						}
-					}
-				}
-			});//end addSelectListener
+			this.getWwd().addSelectListener(new appSelectListener());
 
 		}//end AppFrame
 
@@ -169,12 +177,12 @@ public class MIS_Project extends ApplicationTemplate
 		 */
 		protected JPanel createDetailsPanel(){			
 
-			JTextField caseNumber  = new JTextField(10);
-			JTextField caseType   = new JTextField(10);
-			JTextField caseDate = new JTextField(10);
-			JTextField caseLong   = new JTextField(10);
-			JTextField caseLat  = new JTextField(10);
-			JTextField elevation    = new JTextField(10);
+			caseNumber  = new JTextField(10);
+			caseType   = new JTextField(10);
+			caseDate = new JTextField(10);
+			caseLong   = new JTextField(10);
+			caseLat  = new JTextField(10);
+			elevation    = new JTextField(10);
 
 			caseNumber.setEditable(false);
 			caseType.setEditable(false);
@@ -223,7 +231,7 @@ public class MIS_Project extends ApplicationTemplate
 			GridBagLayout gbl = new GridBagLayout();
 			filter.setLayout(gbl);
 
-			LocalDate now = LocalDate.now();
+			//LocalDate now = LocalDate.now();
 			Properties p = new Properties();
 			p.put("text.today", "Today");
 			p.put("text.month", "Month");
@@ -233,10 +241,10 @@ public class MIS_Project extends ApplicationTemplate
 
 			filter.add(new JLabel("End date: "), new GBConstraints(0,1).anchor(Anchor.WEST));
 
-			UtilDateModel eModel = new UtilDateModel();
-			eModel.setDate(now.getYear(), now.getMonthValue(), now.getDayOfMonth());
-			eModel.setSelected(true);
-			JDatePanelImpl eDatePanel = new JDatePanelImpl(eModel, p);
+			UtilDateModel endModel = new UtilDateModel();
+			endModel.setValue(endDate);
+			endModel.setSelected(true);
+			JDatePanelImpl eDatePanel = new JDatePanelImpl(endModel, p);
 			endDatePicker = new JDatePickerImpl(eDatePanel, new DateLabelFormatter());
 			endDatePicker.addActionListener(this);
 
@@ -244,10 +252,10 @@ public class MIS_Project extends ApplicationTemplate
 
 			filter.add(new JLabel("Start date: "), new GBConstraints(0,2).anchor(Anchor.WEST));
 
-			UtilDateModel bModel = new UtilDateModel();
-			bModel.setDate(2000, 0, 1);
-			bModel.setSelected(true);
-			JDatePanelImpl bDatePanel = new JDatePanelImpl(bModel, p);
+			UtilDateModel beginModel = new UtilDateModel();
+			beginModel.setValue(beginDate);
+			beginModel.setSelected(true);
+			JDatePanelImpl bDatePanel = new JDatePanelImpl(beginModel, p);
 			beginDatePicker = new JDatePickerImpl(bDatePanel, new DateLabelFormatter());
 			beginDatePicker.addActionListener(this);
 
@@ -270,8 +278,111 @@ public class MIS_Project extends ApplicationTemplate
 
 		}//end createDetailsPanel
 
+
+
 		/**
-		 * Inner class to format the date for the datepicker
+		 * This method responds to users inputs
+		 * 
+		 * @Override actionPerformed (ActionEvent event)
+		 */
+		public void resetDatePickers(){
+
+
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(beginDate);
+			int year = cal.get(Calendar.YEAR);
+			int month = cal.get(Calendar.MONTH);
+			int day = cal.get(Calendar.DAY_OF_MONTH);
+
+			beginDatePicker.getModel().setDate(year,month,day);
+
+			cal.setTime(endDate);
+			year = cal.get(Calendar.YEAR);
+			month = cal.get(Calendar.MONTH);
+			day = cal.get(Calendar.DAY_OF_MONTH);
+			endDatePicker.getModel().setDate(year,month,day);
+
+		}//end resetDatePickers
+
+		/**
+		 * This method responds to users inputs
+		 * 
+		 * @Override actionPerformed (ActionEvent event)
+		 */
+		public void actionPerformed(ActionEvent event) {
+
+			System.out.println("command: " + event.getActionCommand());
+
+			if(event.getActionCommand().equals("Open")){
+				Boolean old = UIManager.getBoolean("FileChooser.readOnly");  
+				UIManager.put("FileChooser.readOnly", Boolean.TRUE);  
+				JFileChooser fc = new JFileChooser(".");  
+				UIManager.put("FileChooser.readOnly", old);  
+				FileNameExtensionFilter filter = new FileNameExtensionFilter("*.CSV", "csv");
+				fc.setFileFilter(filter);
+
+				int returnVal = fc.showOpenDialog(this);
+
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					//This is where a real application would open the file.
+					System.out.println("Opening: " + file.getName() + ".");
+
+					if(cyclistsLayer != null && pedestriansLayer != null){//if there is an existing dataLayer, delete it first.
+						crashData.clear();                                                //clear all the data
+						this.getWwd().getModel().getLayers().remove(pedestriansLayer);    //remove the layer
+						this.getWwd().getModel().getLayers().remove(cyclistsLayer);       //remove the layer
+						cyclists.setSelected(true);
+						pedestrians.setSelected(true);
+
+						resetDatePickers();
+
+					}//end if
+
+					crashData.parseDataFrom(file);
+					cyclistsLayer = crashData.createPlotData(CaseType.BICYCLE);
+					pedestriansLayer = crashData.createPlotData(CaseType.PEDESTRIAN);
+
+					insertBeforeCompass(this.getWwd(), cyclistsLayer);
+					insertBeforeCompass(this.getWwd(), pedestriansLayer);
+
+				} else {
+					System.out.println("Open command cancelled by user.");
+				}
+			}else if(event.getActionCommand().equals("Exit")){
+				//shutdown() save stuff
+				System.exit(0);
+			}else if(event.getActionCommand().equals("Date selected")){
+				Date endDate = (Date) endDatePicker.getModel().getValue();
+				Date beginDate = (Date) beginDatePicker.getModel().getValue();
+
+				if(endDate != null && beginDate != null){
+					System.out.println(endDate.toString());
+					System.out.println(beginDate.toString());
+				}//end if(endDate != null
+			}//if either datepicker changed
+
+
+			if(event.getActionCommand().equals("Pedestrians")){
+				if(pedestrians.isSelected()){
+					pedestriansLayer.setEnabled(true);
+				}else{
+					pedestriansLayer.setEnabled(false);
+				}
+			}//end if(event.getActionCommand().equals("Pedestrians"))
+
+			if(event.getActionCommand().equals("Cyclists")){
+				if(cyclists.isSelected()){
+					cyclistsLayer.setEnabled(true);
+				}else{
+					cyclistsLayer.setEnabled(false);
+				}
+			}//end if(event.getActionCommand().equals("Cyclists"))
+
+		}//end actionPerformed
+
+		/**
+		 * Private Inner class to format the date for the datepicker
 		 * 
 		 * @returns a DataLabelFormatter for the datepicker. see method above
 		 */
@@ -298,124 +409,42 @@ public class MIS_Project extends ApplicationTemplate
 		}//end inner class DateLabelFormatter
 
 		/**
-		 * This method builds a layer with tracks on it.
-		 * 
-		 * @returns a layer with marks on it.
+		 *  Private inner class appSelectListener
 		 */
-		protected MarkerLayer buildTracksLayer()
-		{
-			//			try
-			//			{
-			//				GpxReader reader = new GpxReader();
-			//				reader.readStream(WWIO.openFileOrResourceStream(TRACK_PATH, this.getClass()));
-			//				Iterator<Position> positions = reader.getTrackPositionIterator();
-			//
-			//				//BasicMarkerAttributes attrs = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.SPHERE, 1d);
-			//				
-			//				BasicMarkerAttributes attrs = new BasicMarkerAttributes();
-			//				
-			//				ArrayList<Marker> markers = new ArrayList<Marker>();
-			//				while (positions.hasNext())
-			//				{
-			//					markers.add(new BasicMarker(positions.next(), attrs));
-			//				}
-			//
-			//				MarkerLayer layer = new MarkerLayer(markers);
-			//				layer.setOverrideMarkerElevation(true);
-			//				layer.setElevation(0);
-			//				layer.setEnablePickSizeReturn(true);
-			//
-			//				return layer;
-			//			}
-			//			catch (ParserConfigurationException e)
-			//			{
-			//				e.printStackTrace();
-			//			}
-			//			catch (SAXException e)
-			//			{
-			//				e.printStackTrace();
-			//			}
-			//			catch (IOException e)
-			//			{
-			//				e.printStackTrace();
-			//			}
+		private class appSelectListener implements SelectListener{
+			DataPoint temp = null;
 
-			double[][] points = {{-89.84, 35.2}, {-89.91, 35.34}};
+			private String datePattern = "MM/dd/yyyy";
+			private SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
 
-			ArrayList<Marker> markers = new ArrayList<Marker>();
+			@Override
+			public void selected(SelectEvent event) {
+				if (event.getTopObject() != null && event.isLeftClick()){
 
-			Marker marker = new BasicMarker(Position.fromDegrees(35.2, -89.84), new BasicMarkerAttributes());
+					if (event.getTopPickedObject().getParentLayer() instanceof MarkerLayer){
+						PickedObject po = event.getTopPickedObject();
+						//noinspection RedundantCast
 
-			markers.add(marker);
+						temp = crashData.getDataPoint(po.getValue(AVKey.PICKED_OBJECT_ID).toString());
 
-			MarkerLayer layer = new MarkerLayer(markers);
-			layer.setOverrideMarkerElevation(true);
-			layer.setElevation(0);
-			layer.setEnablePickSizeReturn(true);
+						caseNumber.setText(Integer.toString(temp.getCaseNumber()));
+						caseType.setText(temp.getCaseType().toString());  
+						caseDate.setText(dateFormatter.format(temp.getTheDate()));
+						caseLong.setText(Double.toString(temp.getLongitude()));
+						caseLat.setText(Double.toString(temp.getLatitude())); 
+						elevation.setText(Double.toString(temp.getElevation()));
 
-			return layer;
+						System.out.println("lat " + temp.getLatitude() + " Long: " + temp.getLongitude());
 
-			//return null;
-		}//end buildTracksLayer
+						System.out.printf("Track position %s, %s, size = %f\n",
+								po.getValue(AVKey.PICKED_OBJECT_ID).toString(),
+								po.getPosition(), (Double) po.getValue(AVKey.PICKED_OBJECT_SIZE));
 
-		/**
-		 * This method responds to users inputs
-		 * 
-		 * @Override actionPerformed (ActionEvent event)
-		 */
-		public void actionPerformed(ActionEvent event) {
+					}//end if(event.getTopPickedObject()
+				}//end if LeftClick
+			}//end selected
 
-			System.out.println("command: " + event.getActionCommand());
-
-			if(event.getActionCommand().equals("Open")){
-				Boolean old = UIManager.getBoolean("FileChooser.readOnly");  
-				UIManager.put("FileChooser.readOnly", Boolean.TRUE);  
-				JFileChooser fc = new JFileChooser(".");  
-				UIManager.put("FileChooser.readOnly", old);  
-				//JFileChooser fc = new JFileChooser();
-
-				int returnVal = fc.showOpenDialog(this);
-
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					File file = fc.getSelectedFile();
-					//This is where a real application would open the file.
-					System.out.println("Opening: " + file.getName() + ".");
-					crashData.parseDataFrom(file);
-					MarkerLayer layer = crashData.createPlotData();
-					insertBeforeCompass(this.getWwd(), layer);
-				} else {
-					System.out.println("Open command cancelled by user.");
-				}
-			}else if(event.getActionCommand().equals("Exit")){
-				//shutdown() save stuff
-				System.exit(0);
-			}else if(event.getActionCommand().equals("Date selected")){
-				Date endDate = (Date) endDatePicker.getModel().getValue();
-				Date beginDate = (Date) beginDatePicker.getModel().getValue();
-
-				System.out.println(endDate.toString());
-				System.out.println(beginDate.toString());
-			}//if either datepicker changed
-
-
-			if(event.getActionCommand().equals("Pedestrians")){
-				if(pedestrians.isSelected()){
-					System.out.println("Pedestrians selected");
-				}else{
-					System.out.println("Pedestrians deselected");
-				}//end if/else
-			}//end if Pedestrians
-
-			if(event.getActionCommand().equals("Cyclists")){
-				if(cyclists.isSelected()){
-					System.out.println("Cyclists selected");
-				}else{
-					System.out.println("Cyclists deselected");
-				}
-			}//end if Cyclists
-
-		}//end actionPerformed
-
+		}//end inner class appSelectListener 
 
 	}//end class AppFrame 
 
