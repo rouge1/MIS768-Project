@@ -151,17 +151,16 @@ public class DataPointSet {
 	protected MarkerLayer createPlotData()
 	{
 		ArrayList<Marker> markers = new ArrayList<Marker>();
-		Marker a_marker= null;
 		BasicMarkerAttributes redSphere = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.SPHERE, 1d);
 		BasicMarkerAttributes greenSphere = new BasicMarkerAttributes(Material.GREEN, BasicMarkerShape.SPHERE, 1d);
 		
 		for(DataPoint a : dataSet){
 			if(a.getCaseType().equals(CaseType.PEDESTRIAN)){
-				a_marker = new BasicMarker(Position.fromDegrees(a.getLatitude(), a.getLongitude()), redSphere);
+				a.setAttributes(redSphere);
 			}else if(a.getCaseType().equals(CaseType.BICYCLE)){
-				a_marker = new BasicMarker(Position.fromDegrees(a.getLatitude(), a.getLongitude()),greenSphere);
+				a.setAttributes(greenSphere);
 			}
-			markers.add(a_marker);
+			markers.add(a);
 		} //end for
 
 		MarkerLayer layer = new MarkerLayer(markers);
@@ -192,15 +191,16 @@ public class DataPointSet {
 			switch (filterType){
 			case PEDESTRIAN :
 				if(a.getCaseType().equals(filterType)){
-					a_marker = new BasicMarker(Position.fromDegrees(a.getLatitude(), a.getLongitude()), redSphere);
-					markers.add(a_marker);
+					//a_marker = new BasicMarker(Position.fromDegrees(0, 0), redSphere);
+					a.setAttributes(redSphere);
+					markers.add(a);
 					i++;
 				}
 				break;
 			case BICYCLE:
 				if(a.getCaseType().equals(filterType)){
-					a_marker = new BasicMarker(Position.fromDegrees(a.getLatitude(), a.getLongitude()),greenSphere);
-					markers.add(a_marker);
+					a.setAttributes(greenSphere);
+					markers.add(a);
 					i++;
 				}
 				break;

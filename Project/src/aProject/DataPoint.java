@@ -83,7 +83,7 @@ public class DataPoint extends Point{
 	 * @Override theDate the theDate to set
 	 */
 	public String toString() {
-		String temp = String.format("%10s %10s %10s %5.2f %5.2f %5.2f", caseNumber, theCaseType, theDate, this.getLatitude(), this.getLongitude(), this.getElevation());
+		String temp = String.format("%10s %10s %10s %23s", caseNumber, theCaseType, theDate, this.getPosition().toString());
 		return temp;
 	} 
 	

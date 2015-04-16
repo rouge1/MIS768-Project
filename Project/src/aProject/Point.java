@@ -1,18 +1,23 @@
 package aProject;
 
-public class Point {
-	private double latitude;
-	private double longitude;
-	private double elevation;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import gov.nasa.worldwind.geom.Angle;
+import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.markers.BasicMarker;
+import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
+import gov.nasa.worldwind.render.markers.BasicMarkerShape;
+
+public class Point extends BasicMarker{
 
 	/**
 	 *  No arg-constructor
 	 */
 	public Point() {
-		this.latitude = 0;
-		this.longitude = 0;
-		this.elevation = 0;
-	}
+		super(Position.fromDegrees(0,0,0), new BasicMarkerAttributes(Material.WHITE, BasicMarkerShape.SPHERE, 1d));
+	}//end No arg-Constructor
 
 	/**
 	 * @param latitude
@@ -20,51 +25,94 @@ public class Point {
 	 * @param elevation
 	 */
 	public Point(double latitude, double longitude, double elevation) {
-		this.latitude = latitude;
-		this.longitude = longitude;
-		this.elevation = elevation;
-	}
+		super(Position.fromDegrees(latitude,longitude,elevation), new BasicMarkerAttributes(Material.WHITE, BasicMarkerShape.SPHERE, 1d));
+	}// 3 arg constructor
+
 
 	/**
-	 * @return the latitude
+	 * @param latitude
+	 * @param longitude
+	 * @param elevation
+	 * @param bma - BasicMarkerAttributes 
 	 */
-	public double getLatitude() {
+	public Point(double latitude, double longitude, double elevation, BasicMarkerAttributes bma) {
+		super(Position.fromDegrees(latitude,longitude,elevation), bma);
+	}// 4 arg constructor
+
+	/**
+	 * @return the Latitude
+	 */
+	public double getLatitude(){
+		double latitude = 0;
+		
+		String position = this.getPosition().toString();
+		Pattern latitudePattern = Pattern.compile("\\((.*?)°");
+		Matcher matcher = latitudePattern.matcher(position);
+		if (matcher.find()){
+			latitude = Double.parseDouble(matcher.group(1));
+		}//end if
+		
 		return latitude;
 	}//end getLatitude
-	
+
 	/**
-	 * @param latitude the latitude to set
+	 * @return the Longitude
 	 */
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
-	}//end setLatitude
-	
-	/**
-	 * @return the longitude
-	 */
-	public double getLongitude() {
+	public double getLongitude(){
+		double longitude = 0;
+		
+		String position = this.getPosition().toString();
+		Pattern longitudePattern = Pattern.compile(",(.*?)°");
+		Matcher matcher = longitudePattern.matcher(position);
+		if (matcher.find()){
+			longitude = Double.parseDouble(matcher.group(1));
+		}//end if
+		
 		return longitude;
 	}//end getLongitude
 	
 	/**
-	 * @param longitude the longitude to set
-	 */
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
-	}//end setLongitude
-	
-	/**
 	 * @return the elevation
 	 */
-	public double getElevation() {
+	public double getElevation(){
+		double elevation = 0;
+		
+		String position = this.getPosition().toString();
+
+		Pattern elevationPattern = Pattern.compile(",.*?,(.*?)\\)$");
+		Matcher matcher = elevationPattern.matcher(position);
+		if (matcher.find()){
+			elevation = Double.parseDouble(matcher.group(1));
+		}//end if
+		
 		return elevation;
 	}//end getElevation
 	
 	/**
-	 * @param elevation the elevation to set
+	 * @param newLatitude - the new latitude
 	 */
-	public void setElevation(double elevation) {
-		this.elevation = elevation;
+	public void setLatitude(double newLatitude){
+		
+		this.setPosition(Position.fromDegrees(newLatitude,this.getLongitude(),this.getElevation()));
+
+	}//end setLatitude
+
+	/**
+	 * @param newLongitude - the new longitude
+	 */
+	public void setLongitude(double newLongitude){
+ 		
+		this.setPosition(Position.fromDegrees(this.getLatitude(),newLongitude,this.getElevation()));
+		
+	}//end setLongitude
+	
+	/**
+	 * @param newElevation - the new elevation
+	 */
+	public void setElevation(double newElevation){
+		
+		this.setPosition(Position.fromDegrees(this.getLatitude(),this.getLongitude(),newElevation));
+		
 	}//end setElevation
 	
 }//end class Point
