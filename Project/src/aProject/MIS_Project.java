@@ -17,12 +17,14 @@ import gov.nasa.worldwindx.examples.ApplicationTemplate;
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.JFormattedTextField.AbstractFormatter;
@@ -30,8 +32,10 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.BorderLayout;
 import java.awt.GridBagLayout;
+import java.awt.TrayIcon.MessageType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -62,15 +66,21 @@ public class MIS_Project extends ApplicationTemplate
 		private JTextField caseLatitude;   
 		private JTextField caseElevation; 
 		private JButton updateButton;
+		private JButton applyDateFilterButton;
+		private JButton resetDateFilterButton;
 
 		private JDatePickerImpl endDatePicker;
 		private JDatePickerImpl beginDatePicker;
 		private JCheckBox pedestrians;
 		private JCheckBox cyclists;
-		private DataPointSet crashData;
 
-		private Date beginDate; 
-		private Date endDate;
+		private DataPointSet crashData;
+		private DataPointSet filteredCrashData;
+
+		private Date beginDate;                      //Use selection
+		private Date endDate;                        //Use selection
+		private Date todaysDate;                     //Does not change after startup
+		private Date defaultBeginDate;               //Does not change after startup
 
 		private MarkerLayer cyclistsLayer = null;
 		private MarkerLayer pedestriansLayer = null;
@@ -89,16 +99,16 @@ public class MIS_Project extends ApplicationTemplate
 			//			while(dah.getStatus){
 			//				
 			//			}
-
 			//userRole = dah.getrole();
 
 			crashData = new DataPointSet();
 
-
 			try {
-				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-				beginDate = dateFormatter.parse("2000-01-01");
-				endDate = dateFormatter.parse(LocalDate.now().toString());
+				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd"); 
+				defaultBeginDate = dateFormatter.parse("2000-01-01");                
+				beginDate = defaultBeginDate;
+				todaysDate = dateFormatter.parse(LocalDate.now().toString());
+				endDate = todaysDate; 
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
@@ -218,18 +228,7 @@ public class MIS_Project extends ApplicationTemplate
 
 			filter.add(new JLabel("Filter by Date"), new GBConstraints(0,0).anchor(Anchor.CENTER).spanX(2));
 
-			filter.add(new JLabel("End date: "), new GBConstraints(0,1).anchor(Anchor.WEST));
-
-			UtilDateModel endModel = new UtilDateModel();
-			endModel.setValue(endDate);
-			endModel.setSelected(true);
-			JDatePanelImpl eDatePanel = new JDatePanelImpl(endModel, p);
-			endDatePicker = new JDatePickerImpl(eDatePanel, new DateLabelFormatter());
-			endDatePicker.addActionListener(this);
-
-			filter.add(endDatePicker, new GBConstraints(1,1));
-
-			filter.add(new JLabel("Start date: "), new GBConstraints(0,2).anchor(Anchor.WEST));
+			filter.add(new JLabel("Start date: "), new GBConstraints(0,1).anchor(Anchor.WEST));  
 
 			UtilDateModel beginModel = new UtilDateModel();
 			beginModel.setValue(beginDate);
@@ -238,19 +237,43 @@ public class MIS_Project extends ApplicationTemplate
 			beginDatePicker = new JDatePickerImpl(bDatePanel, new DateLabelFormatter());
 			beginDatePicker.addActionListener(this);
 
-			filter.add(beginDatePicker, new GBConstraints(1,2).ipad(1,10));
+			filter.add(beginDatePicker, new GBConstraints(1,1));                        
 
-			filter.add(new JSeparator(JSeparator.HORIZONTAL), new GBConstraints(0,3).fill(Fill.HORIZONTAL).spanX(2)); //Separator
+			filter.add(new JLabel("End date: "), new GBConstraints(0,2).anchor(Anchor.WEST));
 
-			filter.add(new JLabel("Filter by Type"), new GBConstraints(0,4).anchor(Anchor.CENTER).spanX(2));
+			UtilDateModel endModel = new UtilDateModel();
+			endModel.setValue(endDate);
+			endModel.setSelected(true);
+			JDatePanelImpl eDatePanel = new JDatePanelImpl(endModel, p);
+			endDatePicker = new JDatePickerImpl(eDatePanel, new DateLabelFormatter());
+			endDatePicker.addActionListener(this);
+
+			filter.add(endDatePicker, new GBConstraints(1,2));
+
+			JPanel buttonPanel = new JPanel();
+			resetDateFilterButton = new JButton("Reset");
+			resetDateFilterButton.addActionListener(this);
+			resetDateFilterButton.setEnabled(false);
+			buttonPanel.add(resetDateFilterButton);
+
+			applyDateFilterButton = new JButton("Apply");
+			applyDateFilterButton.addActionListener(this);
+			applyDateFilterButton.setEnabled(false);
+			buttonPanel.add(applyDateFilterButton);
+
+			filter.add(buttonPanel, new GBConstraints(1,3).fill(Fill.HORIZONTAL));
+
+			filter.add(new JSeparator(JSeparator.HORIZONTAL), new GBConstraints(0,4).fill(Fill.HORIZONTAL).spanX(2)); //Separator
+
+			filter.add(new JLabel("Filter by Type"), new GBConstraints(0,5).anchor(Anchor.CENTER).spanX(2));
 
 			pedestrians = new JCheckBox("Pedestrians",true);
 			pedestrians.addActionListener(this);
 			cyclists = new JCheckBox("Cyclists",true);
 			cyclists.addActionListener(this);			 
 
-			filter.add(pedestrians, new GBConstraints(0,5).anchor(Anchor.WEST));
-			filter.add(cyclists, new GBConstraints(0,6).anchor(Anchor.WEST));
+			filter.add(pedestrians, new GBConstraints(0,6).anchor(Anchor.WEST));
+			filter.add(cyclists, new GBConstraints(0,7).anchor(Anchor.WEST));
 
 			filter.add(new JPanel(), new GBConstraints(10,10).fill(Fill.BOTH));  //this pushes all components to the top left corner 
 			return filter;
@@ -264,7 +287,7 @@ public class MIS_Project extends ApplicationTemplate
 		 */
 		public void resetDatePickers(){
 
-
+			beginDate = defaultBeginDate;
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(beginDate);
 			int year = cal.get(Calendar.YEAR);
@@ -273,6 +296,7 @@ public class MIS_Project extends ApplicationTemplate
 
 			beginDatePicker.getModel().setDate(year,month,day);
 
+			endDate = todaysDate;
 			cal.setTime(endDate);
 			year = cal.get(Calendar.YEAR);
 			month = cal.get(Calendar.MONTH);
@@ -280,13 +304,13 @@ public class MIS_Project extends ApplicationTemplate
 			endDatePicker.getModel().setDate(year,month,day);
 
 		}//end resetDatePickers
-		
+
 		/**
 		 * This method responds to users inputs
 		 */
 		public void disableDetailsPanel(){
 			updateButton.setEnabled(false);
-			
+
 			caseNumber.setEditable(false);
 			caseNumber.setText("");
 			caseType.setEditable(false);
@@ -299,9 +323,9 @@ public class MIS_Project extends ApplicationTemplate
 			caseLatitude.setText("");
 			caseElevation.setEditable(false);
 			caseElevation.setText("");
-			
+
 		}//end DisableDetailsPanel
-		
+
 		/**
 		 * This method responds to users inputs
 		 */
@@ -320,13 +344,17 @@ public class MIS_Project extends ApplicationTemplate
 				//This is where a real application would open the file.
 				System.out.println("Opening: " + file.getName() + ".");
 
+				if(!resetDateFilterButton.isEnabled() || !applyDateFilterButton.isEnabled()){
+					resetDateFilterButton.setEnabled(true);
+					applyDateFilterButton.setEnabled(true);
+				}
+
 				if(cyclistsLayer != null && pedestriansLayer != null){//if there is an existing dataLayer, delete it first.
 					crashData.clear();                                                //clear all the data
 					this.getWwd().getModel().getLayers().remove(pedestriansLayer);    //remove the layer
 					this.getWwd().getModel().getLayers().remove(cyclistsLayer);       //remove the layer
 					cyclists.setSelected(true);
 					pedestrians.setSelected(true);
-					updateButton.setEnabled(false);
 					resetDatePickers();
 					disableDetailsPanel();
 				}//end if
@@ -349,7 +377,7 @@ public class MIS_Project extends ApplicationTemplate
 			} else {
 				System.out.println("Open command cancelled by user.");
 			}//end if/else JFileChooser.APPROVE_OPTION
-	
+
 		}//end OpenFileAndParseData
 
 
@@ -368,12 +396,29 @@ public class MIS_Project extends ApplicationTemplate
 				//shutdown() save stuff
 				System.exit(0);
 			}else if(event.getActionCommand().equals("Date selected")){
-				Date endDate = (Date) endDatePicker.getModel().getValue();
-				Date beginDate = (Date) beginDatePicker.getModel().getValue();
+				Date newEndDate = (Date) endDatePicker.getModel().getValue();
+				Date newBeginDate = (Date) beginDatePicker.getModel().getValue();
 
-				if(endDate != null && beginDate != null){
-					System.out.println(endDate.toString());
-					System.out.println(beginDate.toString());
+				if(newBeginDate != null && newEndDate != null){
+					if(beginDate.equals(endDate)){
+						System.out.println("Same Date!!");
+					}		
+					SimpleDateFormat simpleDate = new SimpleDateFormat("MM/dd/yyyy");
+					if(newBeginDate.after(newEndDate)){
+						String errorMessage = "\nThe beginning search date of: " + simpleDate.format(newBeginDate) + 
+								" is\nafter the ending search date of: " + simpleDate.format(newEndDate) + "\n";
+						JOptionPane.showMessageDialog(null, errorMessage, "Date selection error", JOptionPane.ERROR_MESSAGE );
+
+						this.resetDatePickers();
+
+						System.out.println("Can't do this! " + simpleDate.format(newBeginDate) + " to " + simpleDate.format(newEndDate));
+					}else{
+
+						beginDate = newBeginDate;
+						endDate = newEndDate;
+
+						System.out.println(simpleDate.format(newBeginDate) + " to " + simpleDate.format(newEndDate));
+					}//end inner if
 				}//end if(endDate != null
 			}//if either datepicker changed
 
@@ -395,9 +440,45 @@ public class MIS_Project extends ApplicationTemplate
 			}//end if(event.getActionCommand().equals("Cyclists"))
 
 
-			if(event.getActionCommand().equals("Update")){
-				
-			}//end if Update
+			if(event.getActionCommand().equals("Apply")){
+				if(crashData.size() > 0){
+
+					filteredCrashData = crashData.filterByDate(beginDate, endDate);
+
+					System.out.println("Size of data is now: " + filteredCrashData.size());
+					System.out.println("Size of data was: " + crashData.size());
+
+					System.out.println(filteredCrashData.toString());
+					//filter here
+					this.getWwd().getModel().getLayers().remove(pedestriansLayer);    //remove the layer
+					this.getWwd().getModel().getLayers().remove(cyclistsLayer);       //remove the layer
+
+					cyclistsLayer = filteredCrashData.createPlotData(CaseType.BICYCLE);
+					pedestriansLayer = filteredCrashData.createPlotData(CaseType.PEDESTRIAN);
+
+					insertBeforeCompass(this.getWwd(), cyclistsLayer);
+					insertBeforeCompass(this.getWwd(), pedestriansLayer);
+
+				}//end if(crashData.size() > 0)
+			}else if((event.getActionCommand().equals("Reset"))){
+				if(crashData.size() > 0){
+					this.resetDatePickers();
+					if(filteredCrashData != null){
+						if(!crashData.equals(filteredCrashData)){
+							filteredCrashData = null;
+							
+							this.getWwd().getModel().getLayers().remove(pedestriansLayer);    //remove the layer
+							this.getWwd().getModel().getLayers().remove(cyclistsLayer);       //remove the layer
+
+							cyclistsLayer = crashData.createPlotData(CaseType.BICYCLE);
+							pedestriansLayer = crashData.createPlotData(CaseType.PEDESTRIAN);
+
+							insertBeforeCompass(this.getWwd(), cyclistsLayer);
+							insertBeforeCompass(this.getWwd(), pedestriansLayer);
+						}//end if(!crashData.equals(filteredCrashData))
+					}//end if(filteredCrashData.size() > 0)
+				}//end if(crashData.size() > 0)
+			}//end if Apply or Reset
 
 		}//end actionPerformed
 
@@ -407,43 +488,43 @@ public class MIS_Project extends ApplicationTemplate
 		private class appSelectListener implements SelectListener{
 			//DataPoint temp = null;
 			DataPoint mark = null;
-		
+
 			private String datePattern = "MM/dd/yyyy";
 			private SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
-		
+
 			@Override
 			public void selected(SelectEvent event) {
 				if (event.getTopObject() != null && event.isLeftClick()){
-		
+
 					if (event.getTopPickedObject().getParentLayer() instanceof MarkerLayer){
 						PickedObject po = event.getTopPickedObject();
 						//noinspection RedundantCast
-		
+
 						mark = (DataPoint) po.getObject();
-		
+
 						caseNumber.setText(Integer.toString(mark.getCaseNumber()));
 						caseType.setText(mark.getCaseType().toString());  
 						caseDate.setText(dateFormatter.format(mark.getTheDate()));
 						caseLongitude.setText(Double.toString(mark.getLongitude()));
 						caseLatitude.setText(Double.toString(mark.getLatitude())); 
 						caseElevation.setText(Double.toString(mark.getElevation()));
-						
+
 						if(!updateButton.isEnabled()){
 							updateButton.setEnabled(true);
 							caseLongitude.setEditable(true);
 							caseLatitude.setEditable(true);
 							caseElevation.setEditable(true);
 						}
-		
+
 						System.out.println("Object type: " + mark.toString() +"\n");
 						System.out.printf("Track position %s, %s, size = %f\n",
 								po.getValue(AVKey.PICKED_OBJECT_ID).toString(),
 								po.getPosition(), (Double) po.getValue(AVKey.PICKED_OBJECT_SIZE));
-		
+
 					}//end if(event.getTopPickedObject()
 				}//end if LeftClick
 			}//end selected
-		
+
 		}//end inner class appSelectListener 
 
 		/**
@@ -452,25 +533,25 @@ public class MIS_Project extends ApplicationTemplate
 		 * @returns a DataLabelFormatter for the datepicker. see method above
 		 */
 		public class DateLabelFormatter extends AbstractFormatter {
-		
+
 			private String datePattern = "yyyy-MM-dd";
 			private SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
-		
+
 			@Override
 			public Object stringToValue(String text) throws ParseException {
 				return dateFormatter.parseObject(text);
 			}//end stringToValue
-		
+
 			@Override
 			public String valueToString(Object value) throws ParseException {
 				if (value != null) {
 					Calendar cal = (Calendar) value;
 					return dateFormatter.format(cal.getTime());
 				}
-		
+
 				return "";
 			}//end stringToValue
-		
+
 		}//end inner class DateLabelFormatter
 
 	}//end class AppFrame 

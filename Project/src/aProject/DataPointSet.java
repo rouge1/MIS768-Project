@@ -14,6 +14,8 @@ import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.Scanner;
 
 import javax.swing.JOptionPane;
@@ -33,20 +35,24 @@ public class DataPointSet {
 	}//no-arg constructor
 
 	/**
-	 * @param dataSet
 	 * @param userLevel
 	 */
-	public DataPointSet(UserLevelType userLevel) {
+	public DataPointSet(UserLevelType userLevel){
 		this.dataSet = new ArrayList<DataPoint>();
 		this.userLevel = userLevel;
-	}//constructor
+	}//1-arg constructor
 
 	/**
-	 * @return the userLevel
+	 * @param userLevel
+	 * @param dataToCopy
 	 */
-	public UserLevelType getUserLevel() {
-		return userLevel;
-	}//getUserLevel
+	public DataPointSet(UserLevelType userLevel, DataPointSet dataToCopy){
+		this.userLevel = userLevel;
+		this.dataSet = new ArrayList<DataPoint>();
+		for(DataPoint aDataPoint : dataToCopy.getArrayList()){
+			this.dataSet.add(aDataPoint);
+		}//end for		
+	}//2-arg constructor
 
 	/**
 	 * @param userLevel the userLevel to set
@@ -55,13 +61,12 @@ public class DataPointSet {
 		this.userLevel = userLevel;
 	}//setUserLevel
 
-
 	/**
-	 * @param dp the DataPoint to add to the ArrayList
+	 * @return the userLevel
 	 */
-	public void addDataPoint(DataPoint dp){
-		dataSet.add(dp);
-	}//end addData
+	public UserLevelType getUserLevel() {
+		return userLevel;
+	}//getUserLevel
 
 	/**
 	 * @param index return the DataPoint at index
@@ -76,6 +81,46 @@ public class DataPointSet {
 	public DataPoint getDataPoint(int index){
 		return dataSet.get(index);
 	}//end getDataPoint
+
+	/**
+	 * @return the DataPointSet
+	 */
+	public ArrayList<DataPoint> getArrayList(){
+		return dataSet;
+	}//end getDataPointSet
+
+	/**
+	 * @param dp the DataPoint to add to the ArrayList
+	 */
+	public void addDataPoint(DataPoint dp){
+		dataSet.add(dp);
+	}//end addData
+
+	/**
+	 * @param dp the DataPointSet check if equal to this dataset
+	 * @returns boolean true or false
+	 * 
+	 * This equals assumes that checkThis is a subset of the dataset
+	 * if checkThis and the dataset is equal then returns true 
+	 * if filtering has occured and checkThis is smaller then returns false. 
+	 */
+	public boolean equals(DataPointSet checkThis){
+		if(this.getUserLevel() == checkThis.getUserLevel()){
+			for(DataPoint aPoint : dataSet){
+				if(!checkThis.getArrayList().contains(aPoint)){
+					return false;
+				} 
+			}
+		}
+		return true;
+	}//end equals
+
+	/**
+	 * @return the DataPointSet
+	 */
+	public int size(){
+		return dataSet.size();
+	}//end size()
 
 	/**
 	 *@Override
@@ -148,12 +193,33 @@ public class DataPointSet {
 	/**
 	 * @Override toString()
 	 */
+	public DataPointSet filterByDate(Date beginDate, Date endDate){
+		DataPointSet filteredByDate =  new DataPointSet(this.userLevel);
+
+		for(DataPoint aDataPoint : this.getArrayList()){
+
+			if(aDataPoint.getTheDate().after(beginDate) && aDataPoint.getTheDate().before(endDate)){
+				filteredByDate.addDataPoint(aDataPoint);
+			}
+			
+			if(aDataPoint.getTheDate().equals(beginDate) && aDataPoint.getTheDate().equals(beginDate)){
+				filteredByDate.addDataPoint(aDataPoint);
+			}
+
+		}//end for
+
+		return filteredByDate;
+	}//end filterByDate
+
+	/**
+	 * @Override toString()
+	 */
 	protected MarkerLayer createPlotData()
 	{
 		ArrayList<Marker> markers = new ArrayList<Marker>();
 		BasicMarkerAttributes redSphere = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.SPHERE, 1d);
 		BasicMarkerAttributes greenSphere = new BasicMarkerAttributes(Material.GREEN, BasicMarkerShape.SPHERE, 1d);
-		
+
 		for(DataPoint a : dataSet){
 			if(a.getCaseType().equals(CaseType.PEDESTRIAN)){
 				a.setAttributes(redSphere);
@@ -183,10 +249,10 @@ public class DataPointSet {
 		Marker a_marker= null;
 		BasicMarkerAttributes redSphere = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.SPHERE, 1d);
 		BasicMarkerAttributes greenSphere = new BasicMarkerAttributes(Material.GREEN, BasicMarkerShape.SPHERE, 1d);
-		
+
 		int i = 0;
-		
-		
+
+
 		for(DataPoint a : dataSet){
 			switch (filterType){
 			case PEDESTRIAN :
@@ -207,18 +273,18 @@ public class DataPointSet {
 			default:
 				break;
 			}//end case statement
-			
+
 		} //end for
-		
-		System.out.println("There are " + i + " " + filterType);
-		
+
+		System.out.println("There are " + i + " " + filterType);   //DEBUG
+
 		MarkerLayer layer = new MarkerLayer(markers);
 
 		layer.setOverrideMarkerElevation(true);
 		layer.setKeepSeparated(false);                //turns off render batching 
 		layer.setElevation(0);
 		layer.setEnablePickSizeReturn(true);
-	
+
 		return layer;
 
 	}//end createPlotData(CaseType filterType)

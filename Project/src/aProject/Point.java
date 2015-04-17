@@ -12,6 +12,8 @@ import gov.nasa.worldwind.render.markers.BasicMarkerShape;
 
 public class Point extends BasicMarker{
 
+	//TODO Someday you may want to implement Renderable (see ScalebarHint for example)
+	
 	/**
 	 *  No arg-constructor
 	 */
