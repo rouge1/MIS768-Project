@@ -83,6 +83,45 @@ public class DataPointSet {
 	}//end getDataPoint
 
 	/**
+	 * This method returns the DataPoint if the caseNumber matches
+	 * 
+	 * @return the dataPoint. returns null if there is no match
+	 */
+	public DataPoint getDataPointByCaseNumber(int caseNumber){
+		DataPoint temp = null;
+		
+		for(DataPoint aPoint : dataSet){
+			if(aPoint.getCaseNumber() == caseNumber){
+				temp =  aPoint;
+			}
+		}//end for
+		
+		return temp;
+	}//end getDataPointByCaseNumber(int index)
+	
+	/**
+	 * This method returns the DataPoint if the caseNumber matches
+	 * 
+	 * @return the dataPoint. returns null if there is no match
+	 */
+	public DataPoint getDataPointByCaseNumber(String caseNumber){
+		DataPoint temp = null;
+		
+		try{
+			int parsedCaseNumber = Integer.parseInt(caseNumber);
+			for(DataPoint aPoint : dataSet){
+				if(aPoint.getCaseNumber() == parsedCaseNumber){
+					temp = aPoint;
+				}
+			}//end for
+		}catch(NumberFormatException nfe){
+			System.out.println(nfe.getMessage());
+		}
+		
+		return temp;
+	}//end getDataPointByCaseNumber(String index)
+	
+	/**
 	 * @return the DataPointSet
 	 */
 	public ArrayList<DataPoint> getArrayList(){
@@ -129,6 +168,55 @@ public class DataPointSet {
 		dataSet.clear();
 	}
 
+	/**
+	 * @Return copySet is a copy of this Dataset
+	 */
+	public DataPointSet copy(){
+		DataPointSet copySet =  new DataPointSet(this.userLevel);
+	
+		for(DataPoint aDataPoint : dataSet){
+			copySet.addDataPoint(aDataPoint);
+		}//end for
+	
+		return copySet;
+	}//end copy()
+
+	/**
+	 * @param caseNumberToFind - the case # of datapoint to remove.  
+	 *        
+	 *        This method removes a DataPoint based on the case number.
+	 */
+	public void removeDataPointByCaseNumber(int caseNumberToFind){
+		for(DataPoint aPoint : dataSet){
+			if(aPoint.getCaseNumber() == caseNumberToFind){
+				dataSet.remove(aPoint);
+			}
+		}//end for
+	}//end removeByCaseNumber
+	
+	/**
+	 * @param text - the case # of datapoint to remove in String format 
+	 *        
+	 *        This method removes a DataPoint based on the case number.
+	 */
+	public void removeDataPointByCaseNumber(String text){
+		
+		int caseNumberToFind = Integer.parseInt(text);
+		
+		for(int i = 0; i < dataSet.size(); i++){
+			if(dataSet.get(i).getCaseNumber() == caseNumberToFind){
+				dataSet.remove(i);
+			}//end if
+		}//for 
+		
+//		for(DataPoint aPoint : dataSet){
+//			if(aPoint.getCaseNumber() == caseNumberToFind){
+//				aPoint.
+//				dataSet.remove(aPoint);
+//			}
+//		}//end for
+	}//end removeByCaseNumber
+	
 	/**
 	 * @param thefile the file name of the csv data
 	 *        to parse into datapoints and create an 
