@@ -37,7 +37,7 @@ import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
 
-public class MIS_Project2 extends JFrame implements ActionListener {
+public class MIS_Project extends JFrame implements ActionListener {
 
 	final String DB_URL = "jdbc:mysql://localhost:3306/aProjectDB";
 	final String USERNAME = "root";
@@ -81,7 +81,7 @@ public class MIS_Project2 extends JFrame implements ActionListener {
 	private Date defaultBeginDate;                //Does not change after startup
 
 
-	public MIS_Project2() {
+	public MIS_Project() {
 		super("Pedestrian and Bicyclist Safety Tool");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLayout(new BorderLayout());
@@ -296,7 +296,7 @@ public class MIS_Project2 extends JFrame implements ActionListener {
 
 		details.add(new JLabel("Database functions:"),new GBConstraints(0,9).fill(Fill.HORIZONTAL).spanX(2));
 
-		uploadToDatabase = new JButton("Upload To Databse");
+		uploadToDatabase = new JButton("Upload To Database");
 		uploadToDatabase.setActionCommand("Up");
 		uploadToDatabase.addActionListener(this);
 		uploadToDatabase.setEnabled(false);
@@ -845,7 +845,7 @@ public class MIS_Project2 extends JFrame implements ActionListener {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				try{
-					MIS_Project2 frame = new MIS_Project2();
+					MIS_Project frame = new MIS_Project();
 					frame.setVisible(true);
 				}catch(Exception e){
 					e.printStackTrace();
