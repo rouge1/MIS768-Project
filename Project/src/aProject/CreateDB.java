@@ -161,15 +161,15 @@ public class CreateDB {
 	    	  				"'Simon', " +
 	    	  				"'test3', " +
 	    	  				"'ADMIN' )");
-
 	         
 	    	  		System.out.println("Table login created.");
 			}
 			catch (SQLException ex) {
 					System.out.println("ERROR: " + ex.getMessage());
 			} // end of try/catch
+
 		} // end of buildLoginTable method
 
-}
+} // end of class CreateDB
 
 
