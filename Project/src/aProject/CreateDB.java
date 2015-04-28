@@ -11,6 +11,13 @@ import java.sql.*;
  */
 
 public class CreateDB {
+	
+	/**
+	 * The DB method: first creates a connection to MySQL;
+	 * second, it creates the aProjectDB database -- if the database already exists, it drops the database;
+	 * third, it calls on the buildCaseLocations method and the buildLoginTable
+	 * method to create the caseLocations and login tables.
+	 */
 
 	public static void DB() {
 		// Create a named constant for the URL.
@@ -22,17 +29,16 @@ public class CreateDB {
 	    final String PASSWORD = "";
 
 	    try {
-	         // Create a connection to the database.
-	         Connection conn =
+	         	// Create a connection to the database.
+	         	Connection conn =
 	                DriverManager.getConnection(DB_URL, USERNAME, PASSWORD);
-	            
-	         
+	            	         
 	         	// Create the database. If the database already exists, drop it. 
 	            createDataBase(conn);
 	            conn.close();
 	            
-	         //Create a connection to the database and to the aProject database   
-	         Connection conn2 =
+	            //Create a connection to the database and to the aProject database   
+	            Connection conn2 =
 	        		 DriverManager.getConnection(DB_GROUP_URL, USERNAME, PASSWORD);
 				
 				// Build the caseLocations table
@@ -41,13 +47,13 @@ public class CreateDB {
 				// Build the login table
 				buildLoginTable(conn2);
 				
-	         // Close the connection.
-	         conn2.close();
+				// Close the connection.
+				conn2.close();
 	      }
 	      catch (Exception ex) {
 	         System.out.println("ERROR: " + ex.getMessage());
-	      }
-	   }
+	      } // end of try/catch
+	   } // end of DB method
 	
 		/**
 		 * The createDatabase method creates the DB. If the DB already exists, drop the DB first.
@@ -58,32 +64,33 @@ public class CreateDB {
 		   System.out.println("Checking for existing database.");
 		   
 		   try{
-			   Statement stmt = conn.createStatement();
+			   		// Create a statement object.
+			   		Statement stmt = conn.createStatement();
 			   
-			   //Drop the existing database
-			   try {
-				   stmt.executeUpdate("Drop DATABASE aProjectDB");
-			   }
-			   catch(SQLException ex) {
-					// No need to report an error.
-					// The database simply did not exist.
-				}
-			   //Create a new database
-			   try {
-				   stmt.execute("Create DATABASE aProjectDB");
-				   //stmt.execute("USE coffee");
-				   System.out.println("Database aProject created.");
-			   }
-			   catch(SQLException ex) {
-					// No need to report an error.
-					// The database simply did not exist.
-				}			   
+			   		// Drop the existing database.
+			   		try {
+			   			stmt.executeUpdate("Drop DATABASE aProjectDB");
+			   		}
+			   		catch(SQLException ex) {
+			   			// No need to report an error.
+			   			// The database simply did not exist.
+			   		} // end of try/catch
+			   
+			   		// Create a new database.
+			   		try {
+			   			stmt.execute("Create DATABASE aProjectDB");
+			   			System.out.println("Database aProject created.");
+			   		}
+			   		catch(SQLException ex) {
+			   			// No need to report an error.
+			   			// The database simply did not exist.
+			   		} // end of try/catch		   
 		   }
 	  	   catch(SQLException ex) {
 	  		   System.out.println("ERROR: " + ex.getMessage());
 	  		   ex.printStackTrace();
-			}
-	   } 
+			} // end of try/catch
+	   } // end of createDatabase method
 	   
 	   /**
 	    * The buildCaseLocationsTable method creates the caseLocations table.
@@ -92,29 +99,27 @@ public class CreateDB {
 
 	   public static void buildCaseLocationsTable(Connection conn){
 			try {
-	         // Get a Statement object.
-	         Statement stmt = conn.createStatement();
-	         
-	         String query;
-	         
-				// Create the table.
-				stmt.execute("CREATE TABLE caseLocations (" +
-							"caseID MEDIUMINT NOT NULL PRIMARY KEY AUTO_INCREMENT, " +
-	   				       "caseNumber CHAR(25), " +
-	                      "caseType CHAR(10) NOT NULL, " +
-	                      "caseDate DATE NOT NULL, " +
-	                      "caseLat CHAR(10) NOT NULL, " +
-	                      "caseLong CHAR(10) NOT NULL, " +
-	                      "caseElev CHAR(10) NOT NULL " +
-	                      ")");
+					// Get a Statement object.
+					Statement stmt = conn.createStatement();
+	              
+					// Create the table.
+					stmt.execute("CREATE TABLE caseLocations (" +
+						"caseID MEDIUMINT NOT NULL PRIMARY KEY AUTO_INCREMENT, " +
+	   				    "caseNumber CHAR(25), " +
+	                    "caseType CHAR(10) NOT NULL, " +
+	                    "caseDate DATE NOT NULL, " +
+	                    "caseLat CHAR(10) NOT NULL, " +
+	                    "caseLong CHAR(10) NOT NULL, " +
+	                    "caseElev CHAR(10) NOT NULL " +
+	                    ")");
 								 								 
-				System.out.println("Table caseLocations created.");
+					System.out.println("Table caseLocations created.");
 				
 			}
 			catch (SQLException ex) {
-	         System.out.println("ERROR: " + ex.getMessage());
-			}
-		}
+					System.out.println("ERROR: " + ex.getMessage());
+			} // end of try/catch
+		} // end of buildCaseLocationsTable method
 
 		/**
 		 * The buildLoginTable method creates the Login table and adds some rows to it.
@@ -122,49 +127,48 @@ public class CreateDB {
 		 */
 		public static void buildLoginTable(Connection conn){
 	      try {
-	         // Get a Statement object.
-	         Statement stmt = conn.createStatement();
+	    	  		// Get a Statement object.
+	    	  		Statement stmt = conn.createStatement();
 	         
-	         // Create the table.
-	         stmt.execute("CREATE TABLE login (" +
-	            "userID MEDIUMINT NOT NULL PRIMARY KEY AUTO_INCREMENT, " +
-	            "userName CHAR(10) NOT NULL, " +
-	            "password CHAR(25) NOT NULL, "  +
-	            "userType CHAR(5) NOT NULL" +
-	            ")");
+	    	  		// Create the table.
+	    	  		stmt.execute("CREATE TABLE login (" +
+	    	  			"userID MEDIUMINT NOT NULL PRIMARY KEY AUTO_INCREMENT, " +
+	    	  			"userName CHAR(10) NOT NULL, " +
+	    	  			"password CHAR(25) NOT NULL, "  +
+	    	  			"userType CHAR(5) NOT NULL" +
+	    	  			")");
 	         
-	         // INSERT login row 1
-	         stmt.execute("INSERT INTO login " +
-	        		 "(userName, password, userType) " +
-	        		 "VALUES ( " +
-                     "'Andrea', " +
-                     "'test', " +
-                     "'ADMIN' )");
+	    	  		// INSERT login row 1
+	    	  		stmt.execute("INSERT INTO login " +
+	    	  				"(userName, password, userType) " +
+	    	  				"VALUES ( " +
+	    	  				"'Andrea', " +
+	    	  				"'test', " +
+	    	  				"'ADMIN' )");
 	         
-	         // INSERT login row 2
-	         stmt.execute("INSERT INTO login " +
-	        		 "(userName, password, userType) " +
-	        		 "VALUES ( " +
-                     "'Daniel', " +
-                     "'test2', " +
-                     "'USER' )");
+	    	  		// INSERT login row 2
+	    	  		stmt.execute("INSERT INTO login " +
+	    	  				"(userName, password, userType) " +
+	    	  				"VALUES ( " +
+	    	  				"'Daniel', " +
+	    	  				"'test2', " +
+	    	  				"'USER' )");
 
-	         // INSERT login row 3
-	         stmt.execute("INSERT INTO login " +
-	        		 "(userName, password, userType) " +
-	        		 "VALUES ( " +
-                     "'Simon', " +
-                     "'test3', " +
-                     "'ADMIN' )");
+	    	  		// INSERT login row 3
+	    	  		stmt.execute("INSERT INTO login " +
+	    	  				"(userName, password, userType) " +
+	    	  				"VALUES ( " +
+	    	  				"'Simon', " +
+	    	  				"'test3', " +
+	    	  				"'ADMIN' )");
 
 	         
-	         System.out.println("Table login created.");
+	    	  		System.out.println("Table login created.");
 			}
 			catch (SQLException ex) {
-	         System.out.println("ERROR: " + ex.getMessage());
-			}
-		}
-
+					System.out.println("ERROR: " + ex.getMessage());
+			} // end of try/catch
+		} // end of buildLoginTable method
 
 }
 
