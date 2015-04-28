@@ -2,10 +2,19 @@ package aProject;
 
 import java.sql.*;
 
+/**
+ * The CreateDB class stores the methods on how to connect to MySQL, create the aProjectDB database,
+ * create the caseLocations and login tables, and populate the login table with login data for three 
+ * users for Group #2's term group programming project.
+ * @author Group #2
+ * @version 1.0
+ */
+
 public class CreateDB {
 
 	public static void DB() {
-		// TODO Auto-generated method stub
+		// Create a named constant for the URL.
+		// NOTE: This value is specific for MySQL.
 		
 		final String DB_URL = "jdbc:mysql://localhost:3306/";
 	    final String DB_GROUP_URL = "jdbc:mysql://localhost:3306/aProjectDB";
@@ -22,7 +31,7 @@ public class CreateDB {
 	            createDataBase(conn);
 	            conn.close();
 	            
-	         //Create a connection to the database and to the coffee database   
+	         //Create a connection to the database and to the aProject database   
 	         Connection conn2 =
 	        		 DriverManager.getConnection(DB_GROUP_URL, USERNAME, PASSWORD);
 				
@@ -39,6 +48,11 @@ public class CreateDB {
 	         System.out.println("ERROR: " + ex.getMessage());
 	      }
 	   }
+	
+		/**
+		 * The createDatabase method creates the DB. If the DB already exists, drop the DB first.
+		 * @param conn Connection. Connection to the MySQL database.
+		 */
 	
 	   public static void createDataBase(Connection conn) {
 		   System.out.println("Checking for existing database.");
@@ -70,6 +84,11 @@ public class CreateDB {
 	  		   ex.printStackTrace();
 			}
 	   } 
+	   
+	   /**
+	    * The buildCaseLocationsTable method creates the caseLocations table.
+	    * @param conn. Connection to the MySQL database.
+	    */
 
 	   public static void buildCaseLocationsTable(Connection conn){
 			try {
@@ -82,11 +101,11 @@ public class CreateDB {
 				stmt.execute("CREATE TABLE caseLocations (" +
 							"caseID MEDIUMINT NOT NULL PRIMARY KEY AUTO_INCREMENT, " +
 	   				       "caseNumber CHAR(25), " +
-	                      "caseType CHAR(10), " +
-	                      "caseDate DATE, " +
-	                      "caseLat CHAR(10), " +
-	                      "caseLong CHAR(10), " +
-	                      "caseElev CHAR(10) " +
+	                      "caseType CHAR(10) NOT NULL, " +
+	                      "caseDate DATE NOT NULL, " +
+	                      "caseLat CHAR(10) NOT NULL, " +
+	                      "caseLong CHAR(10) NOT NULL, " +
+	                      "caseElev CHAR(10) NOT NULL " +
 	                      ")");
 								 								 
 				System.out.println("Table caseLocations created.");
@@ -98,8 +117,8 @@ public class CreateDB {
 		}
 
 		/**
-		 * The buildLoginTable method creates the
-		 * Customer table and adds some rows to it.
+		 * The buildLoginTable method creates the Login table and adds some rows to it.
+		 * @param conn. Connection to the MySQL database.
 		 */
 		public static void buildLoginTable(Connection conn){
 	      try {
@@ -139,7 +158,7 @@ public class CreateDB {
                      "'ADMIN' )");
 
 	         
-				System.out.println("Table login created.");
+	         System.out.println("Table login created.");
 			}
 			catch (SQLException ex) {
 	         System.out.println("ERROR: " + ex.getMessage());
