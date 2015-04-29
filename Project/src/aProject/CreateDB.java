@@ -1,7 +1,5 @@
 package aProject;
 
-import java.sql.*;
-
 /**
  * The CreateDB class stores the methods on how to connect to MySQL, create the aProjectDB database,
  * create the caseLocations and login tables, and populate the login table with login data for three 
@@ -9,6 +7,8 @@ import java.sql.*;
  * @author Group #2
  * @version 1.0
  */
+
+import java.sql.*;
 
 public class CreateDB {
 	
@@ -22,7 +22,6 @@ public class CreateDB {
 	public static void DB() {
 		// Create a named constant for the URL.
 		// NOTE: This value is specific for MySQL.
-		
 		final String DB_URL = "jdbc:mysql://localhost:3306/";
 	    final String DB_GROUP_URL = "jdbc:mysql://localhost:3306/aProjectDB";
 	    final String USERNAME = "root";

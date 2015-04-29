@@ -1,5 +1,14 @@
 package aProject;
 
+/**
+ * The Login class stores data and methods: 
+ * 1) connecting to --> MySQL aProjectDB database --> LOGIN table;
+ * 2) authenticating user-entered username and password credentials with an existing record in the LOGIN table;
+ * 3) retrieving userType from the LOGIN table to determine user level type.
+ * @author Group #2
+ * @version 1.0
+ */
+
 import gbl.Anchor;
 import gbl.Fill;
 import gbl.GBConstraints;
@@ -26,15 +35,15 @@ import java.sql.*;
 
 public class Login extends JButton implements ActionListener{
 
-	// Create named constants for the URL, user name, and password
+	// Create named constants for the MySQL URL, username, and password.
 	final String DB_URL = "jdbc:mysql://localhost:3306/aProjectDB";
 	final String USER_NAME = "root";
 	final String PASSWORD = "";
 
 	private JPanel loginPanel;
-	private JTextField txtUsername;
-	private JTextField txtPassword;
-	private String userType;
+	private JTextField txtUsername;  // Textfield for user to enter username.
+	private JTextField txtPassword;  // Textfield for user to enter password.
+	private String userType;		 // Variable to hold user type associated with verified username/password; retrieved from database.
 
 	/**
 	 * Create the frame.
@@ -42,7 +51,10 @@ public class Login extends JButton implements ActionListener{
 	public Login() {
 		super("Login");
 
+		// Create a new CreateDB object.
 		CreateDB db = new CreateDB();
+		
+		// Execute the DB() method.
 		db.DB();
 
 		loginPanel = new JPanel();
@@ -76,27 +88,31 @@ public class Login extends JButton implements ActionListener{
 		
 		loginPanel.add(temp, new GBConstraints(0,3).fill(Fill.HORIZONTAL).spanX(2));
 
-	}//end constructor
+	} // end of constructor
 
 	/**
-	 * @param userType the userType to set
+	 * The getPanel method returns the login panel.
+	 * @return The login panel.
 	 */
 	public JPanel getPanel(){
 		return loginPanel;
-	}//end getPanel()
+	} // end of getPanel method
 
 	/**
-	 * @return the userType
+	 * The getUserType method returns the user
+	 * level type.
+	 * @return The user's user level type.
 	 */
 	public UserLevelType getUserType() {
-
 		if(userType.equals(UserLevelType.ADMIN.toString())){
 			return UserLevelType.ADMIN;
 		}
+		
 		return UserLevelType.USER;
-	}//end getUserType
+	} // end of getUserType method
 
 	/**
+	 * The actionPerformed method
 	 * @param userType the userType to set
 	 * @Override
 	 */
@@ -113,46 +129,56 @@ public class Login extends JButton implements ActionListener{
 
 				// Create a Statement object
 				Statement stmt = conn.createStatement();
-
+				
+				// Extract all records from the LOGIN table.
 				String sqlStatement = "SELECT userName, password, userType FROM login";
+				
+				// Store all records from LOGIN table into ResultSet variable.
 				ResultSet results = stmt.executeQuery(sqlStatement);
 
+				// Loop through records in results to authenticate user.
 				while (results.next()) {
 					String user = results.getString("userName");
 					String pw = results.getString("password");
 					String t = results.getString("userType");
-
+					
+					// Compare user-entered data with existing records from LOGIN table.
+					// If user is authenticated, retrieve corresponding userType value.
 					if((u.equals(user)) && (p.equals(pw))) {
 						flag = true;
 						userType = t;
 						System.out.println("the usertype: " + getUserType());
-					}//end if	
-				}//end while(results.next())
+					} // end if	
+				} // end of while loop
 
+				// If user is authenticated, determine which action performed method to fire by userType.
 				if(flag = true){
 					if(userType.equals(UserLevelType.ADMIN.toString())){
 						this.fireActionPerformed(new ActionEvent("",ActionEvent.ACTION_PERFORMED,"ADMIN"));
 					}else{
 						this.fireActionPerformed(new ActionEvent("",ActionEvent.ACTION_PERFORMED,"USER"));
-					}//if (userType.equals
-				}else if(flag == false){
+					} // end of if
+				}
+				// If user is not authenticated, display error message and clear textfields.
+				else if(flag == false){
 					JOptionPane.showMessageDialog(null, "Username and Password not found.");
 					txtUsername.setText("");
 					txtPassword.setText("");
-				}//end if(flag == false)
+				} // end of if
 
 			}catch(Exception ex) {
-				JOptionPane.showMessageDialog(null, "THis Place ERROR: " + ex.getMessage() );
-			}//end try/catch
+				JOptionPane.showMessageDialog(null, "Please check your user credentials.");
+			} // end of try/catch
 
 			this.doClick();
-		}//end if Submit
+		} // end of if
 
+		// Reset textfields to blank.
 		if(event.getActionCommand().equals("Clear")){
 			txtUsername.setText("");
 			txtPassword.setText("");
-		}//end if clear
+		} // end of if
 
-	}//end actionPerformed
+	} // end of actionPerformed
 
-}//end class Login
+} // end of class Login
