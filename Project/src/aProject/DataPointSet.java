@@ -20,14 +20,47 @@ import java.util.Scanner;
 
 import javax.swing.JOptionPane;
 
+/**
+ * This class represents a collection of DataPoints and the associated userlevel of the user.  
+ * 
+ * It has the following fields
+ *  
+ *	1)ArrayList<DataPoint> dataSet;   //a panel holds loginScreen and the main app
+ *	2)userLevel                       //layout controller for panel holding loginScreen/main App
+ *
+ * It has the following methods
+ *     1)  DataPointSet()             				 - empty constructor
+ *     2)  DataPointSet(UserLevelType)				 - constructor with 
+ *     3)  DataPointSet(UserLevelType, DataPointSet) - constructor the UI for the menu bar of the application
+ *     4)  setUserLevel(UserLevelType)         		 - This method sets the UserLevelType 
+ *     5)  getUserLevel()     		 			     - This method gets the UserLevelType 
+ *     6)  getDataPoint(String)  					 - This method gets the DataPoint by index number (String input) 
+ *     7)  getDataPoint(int)           				 - This method gets the DataPoint by index number (int input)
+ *     8)  getDataPointByCaseNumber(String)			 - This method gets the DataPoint by case number (String input)
+ *     9)  getDataPointByCaseNumber(int)    		 - This method gets the DataPoint by case number (int input)
+ *     10) getArrayList()	         				 - This method gets the array list of data
+ *     11) addDataPoint(DataPoint)     			     - This method adds a DataPoint to the array list in this class
+ *     12) equals(DataPointSet)       				 - This method return true if two DataPointSets are equal
+ *     13) size()		 			     			 - This method returns the size of the array list
+ *     14) clear()	  				 				 - This method clears the array list 
+ *     15) copy()		  				 			 - This method returns a copy of the class
+ *     16) removeDatPointByCaseNumber(String)		 - This method removes DataPoint by case number (String input)
+ *     17) removeDatPointByCaseNumber(int)			 - This method removes DataPoint by case number (int input)
+ *     18) parseDataFrom(File)						 - This method parses csv data into datapoints and creates an array list
+ *     19) filterByDate(Date,Date)					 - This method returns DataPointSet filtered by date 
+ *     20) createPlotData()						 	 - This method returns MarkerLayer to put on the globe based on the data 
+ *     21) createPlotData(caseType)					 - This method returns MarkerLayer to put on the globe based on the data and caseType 
+ *     22) toString									 - This returns a String representation of the data in the class
+ *     
+ **/
+
 public class DataPointSet {
 
 	private ArrayList<DataPoint> dataSet;
 	private UserLevelType userLevel;
 
-	/**
-	 * @param dataSet
-	 * @param userLevel
+	/***
+	 * Method is the constructor for this class
 	 */
 	public DataPointSet() {
 		this.dataSet = new ArrayList<DataPoint>();
@@ -35,7 +68,8 @@ public class DataPointSet {
 	}//no-arg constructor
 
 	/**
-	 * @param userLevel
+	 * Method is the constructor for this class
+	 * @param userLevel the userlevel to set
 	 */
 	public DataPointSet(UserLevelType userLevel){
 		this.dataSet = new ArrayList<DataPoint>();
@@ -43,8 +77,9 @@ public class DataPointSet {
 	}//1-arg constructor
 
 	/**
-	 * @param userLevel
-	 * @param dataToCopy
+	 * Method is the constructor for this class
+	 * @param userLevel the userlevel to set
+	 * @param dataToCopy a arraylist of dataPoints
 	 */
 	public DataPointSet(UserLevelType userLevel, DataPointSet dataToCopy){
 		this.userLevel = userLevel;
@@ -55,6 +90,7 @@ public class DataPointSet {
 	}//2-arg constructor
 
 	/**
+	 * This method sets the UserLevelType 
 	 * @param userLevel the userLevel to set
 	 */
 	public void setUserLevel(UserLevelType userLevel) {
@@ -62,6 +98,7 @@ public class DataPointSet {
 	}//setUserLevel
 
 	/**
+	 * This method gets the UserLevelType 
 	 * @return the userLevel
 	 */
 	public UserLevelType getUserLevel() {
@@ -69,14 +106,18 @@ public class DataPointSet {
 	}//getUserLevel
 
 	/**
-	 * @param index return the DataPoint at index
+	 * This method gets the DataPoint by index number (String input) 
+	 * @param index number in the array list
+	 * @return a DataPoint
 	 */
 	public DataPoint getDataPoint(String index){
 		return dataSet.get(Integer.parseInt(index));
 	}//end getDataPoint
 
 	/**
-	 * @param index return the DataPoint at index
+	 * This method gets the DataPoint by index number (String input) 
+	 * @param index number in the array list
+	 * @return a DataPoint
 	 */
 	public DataPoint getDataPoint(int index){
 		return dataSet.get(index);
@@ -84,29 +125,29 @@ public class DataPointSet {
 
 	/**
 	 * This method returns the DataPoint if the caseNumber matches
-	 * 
+	 * @param case number of an element in the array list
 	 * @return the dataPoint. returns null if there is no match
 	 */
 	public DataPoint getDataPointByCaseNumber(int caseNumber){
 		DataPoint temp = null;
-		
+
 		for(DataPoint aPoint : dataSet){
 			if(aPoint.getCaseNumber() == caseNumber){
 				temp =  aPoint;
 			}
 		}//end for
-		
+
 		return temp;
 	}//end getDataPointByCaseNumber(int index)
-	
+
 	/**
 	 * This method returns the DataPoint if the caseNumber matches
-	 * 
+	 * @param case number of an element in the array list
 	 * @return the dataPoint. returns null if there is no match
 	 */
 	public DataPoint getDataPointByCaseNumber(String caseNumber){
 		DataPoint temp = null;
-		
+
 		try{
 			int parsedCaseNumber = Integer.parseInt(caseNumber);
 			for(DataPoint aPoint : dataSet){
@@ -117,12 +158,13 @@ public class DataPointSet {
 		}catch(NumberFormatException nfe){
 			System.out.println(nfe.getMessage());
 		}
-		
+
 		return temp;
 	}//end getDataPointByCaseNumber(String index)
-	
+
 	/**
-	 * @return the DataPointSet
+	 * This method gets the array list of data
+	 * @return the ArrayList<DataPoint>
 	 */
 	public ArrayList<DataPoint> getArrayList(){
 		return dataSet;
@@ -173,11 +215,11 @@ public class DataPointSet {
 	 */
 	public DataPointSet copy(){
 		DataPointSet copySet =  new DataPointSet(this.userLevel);
-	
+
 		for(DataPoint aDataPoint : dataSet){
 			copySet.addDataPoint(aDataPoint);
 		}//end for
-	
+
 		return copySet;
 	}//end copy()
 
@@ -193,30 +235,30 @@ public class DataPointSet {
 			}
 		}//end for
 	}//end removeByCaseNumber
-	
+
 	/**
 	 * @param text - the case # of datapoint to remove in String format 
 	 *        
 	 *        This method removes a DataPoint based on the case number.
 	 */
 	public void removeDataPointByCaseNumber(String text){
-		
+
 		int caseNumberToFind = Integer.parseInt(text);
-		
+
 		for(int i = 0; i < dataSet.size(); i++){
 			if(dataSet.get(i).getCaseNumber() == caseNumberToFind){
 				dataSet.remove(i);
 			}//end if
 		}//for 
-		
-//		for(DataPoint aPoint : dataSet){
-//			if(aPoint.getCaseNumber() == caseNumberToFind){
-//				aPoint.
-//				dataSet.remove(aPoint);
-//			}
-//		}//end for
+
+		//		for(DataPoint aPoint : dataSet){
+		//			if(aPoint.getCaseNumber() == caseNumberToFind){
+		//				aPoint.
+		//				dataSet.remove(aPoint);
+		//			}
+		//		}//end for
 	}//end removeByCaseNumber
-	
+
 	/**
 	 * @param thefile the file name of the csv data
 	 *        to parse into datapoints and create an 
@@ -279,7 +321,10 @@ public class DataPointSet {
 	}//end parseData
 
 	/**
-	 * @Override toString()
+	 * This method returns DataPointSet filtered by date 
+	 * @param beginDate the start date of the window of data we are looking for
+	 * @param endDate the end date of the window of data we are looking for
+	 * @return DataPointSet the set of data inside of the window of dates
 	 */
 	public DataPointSet filterByDate(Date beginDate, Date endDate){
 		DataPointSet filteredByDate =  new DataPointSet(this.userLevel);
@@ -289,7 +334,7 @@ public class DataPointSet {
 			if(aDataPoint.getTheDate().after(beginDate) && aDataPoint.getTheDate().before(endDate)){
 				filteredByDate.addDataPoint(aDataPoint);
 			}
-			
+
 			if(aDataPoint.getTheDate().equals(beginDate) && aDataPoint.getTheDate().equals(beginDate)){
 				filteredByDate.addDataPoint(aDataPoint);
 			}
@@ -298,9 +343,10 @@ public class DataPointSet {
 
 		return filteredByDate;
 	}//end filterByDate
-
+							 
 	/**
-	 * @Override toString()
+	 * This method returns MarkerLayer to put on the globe based on the data 
+	 * @return a MarkerLayer to display on the World Wind Globe
 	 */
 	protected MarkerLayer createPlotData()
 	{
@@ -329,7 +375,8 @@ public class DataPointSet {
 	}//end createPlotData
 
 	/**
-	 * @Override toString()
+	 * This method returns MarkerLayer to put on the globe based on the data and caseType 
+	 * @return a MarkerLayer to display on the World Wind Globe
 	 */
 	protected MarkerLayer createPlotData(CaseType filterType)
 	{
@@ -378,6 +425,7 @@ public class DataPointSet {
 	}//end createPlotData(CaseType filterType)
 
 	/**
+	 * This returns a String representation of the data in the class
 	 * @Override toString()
 	 */
 	public String toString(){

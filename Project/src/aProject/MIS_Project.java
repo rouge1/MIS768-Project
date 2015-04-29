@@ -36,6 +36,81 @@ import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
+/**
+ * This class is the main class for the "Pedestrian and Bicyclist Safety Tool"
+ * 
+ * The program provides end users with an interactive tool for 
+ * crash data point mapping. Using this software, state and local agencies can take steps 
+ * to facilitate safer pedestrian and bicycle travel by identifying “hot spot” areas where 
+ * crashes are more likely to occur. Once these locations have been determined, 
+ * targeted initiatives and strategies can be implemented to increase the 
+ * safety of pedestrian and bicycle commuters.
+ *    
+ * It has the following fields
+ *  
+ *	1)cards;                          //a panel holds loginScreen and the main app
+ *	2)cardLayoutController            //layout controller for panel holding loginScreen/main App
+ *	3)canvasSize                      //preferred size of app
+ *
+ *	4)caseNumber;                     //Textfield in Details Panel that displays case number 
+ *	5)caseType;                       //Textfield in Details Panel that displays case type
+ *	6)caseDate;                       //Textfield in Details Panel that displays case date
+ *	7)caseLongitude;                  //Textfield in Details Panel that displays longitude
+ *	8)caseLatitude;                   //Textfield in Details Panel that displays latitude
+ *	9)caseElevation;                  //Textfield in Details Panel that displays elevation
+ *	10)updateButton;                  //Button in Details Panel to update DataPoint data when user login as ADMIN
+ *	11)deleteButton;                  //Button in Details Panel to delete DataPoint data when user login as ADMIN
+ *
+ *	12)applyDateFilterButton;         //Button in Filters Panel to apply a date filter
+ *	13)resetDateFilterButton;         //Button in Filters Panel to reset data to when CSV file was loaded
+ *	14)uploadToDatabase;              //Button in Details Panel to upload data to the database
+ *	15)downloadFromDatabase;          //Button in Details Panel to download data from the database
+ *	16)databaseStatus;                //Text field showing the status of database processes
+ *	17loginScreen;                    //The login in screen
+ *
+ *	18)endDatePicker;                 //Date calendar picker for end date filter
+ *	19)beginDatePicker;               //Date calendar picker for end date filter
+ *	20)pedestrians;                   //JCheckBox to filter out pedstrians
+ *	21)cyclists;                      //JCheckBox to filter out cyclists
+ *
+ *	22)crashData;                     //DataPointSet that holds the original data loaded from the CSV file 
+ *	23)filteredCrashData;             //DataPointSet that holds the data filtered by the user input
+ *
+ *	24)worldWindGlobe;				  //reference to the globe
+ *	25)cyclistsLayer                  //This is the canvas that filteredCrashData plots cyclists data points
+ *	26)pedestriansLayer               //This is the canvas that filteredCrashData plots pedestrians data points
+ *
+ *	27)beginDate;                     //User selection of begin date
+ *	28)endDate;                       //User selection of end date
+ *	29)todaysDate;                    //Does not change after startup, save todays date
+ *	30)defaultBeginDate;              //Does not change after startup, save the default begin date
+ *
+ *  31)DB_URL                         //Constants for location of database
+ *	32)USERNAME                       //Constants for username to database
+ * 	33)PASSWORD                       //Constants for password to database
+ *
+ *  
+ *  
+ * It has the following methods
+ *     1)  MIS_Project()              - empty constructor
+ *     2)  createUIforFrame()         - creates the UI for the frame of the application
+ *     3)  createMenuBar()            - creates the UI for the menu bar of the application
+ *     4)  createfilterPanel()        - creates the UI for the filter panel of the application
+ *     5)  createDetailsPanel()       - creates the UI for the details panel of the application
+ *     6)  nameOfVisiblePanel(JPanel) - returns the name of the panel on top/visible
+ *     7)  restoreData()              - This method restores data from the CSV file
+ *     8)  createFilteredData()       - This method creates filtered data based on the user interaction with Filters Panel
+ *     9)  resetFilters()             - This method resets the Filters Panel  
+ *     10) resetDatePickers()         - This method resets the Date pickers in the Filters Panel
+ *     11) disableDetailsPanel()      - This method disables the Details Panel
+ *     12) handleDeleteButton()       - This method handles the delete button
+ *     13) handleUpdateButton()		  - This method handles the update button
+ *     14)openFileAndParseData()	  - This method opens a file and parses data
+ *     15)uploadToDatabase()		  - This method uploads the data in CrashData
+ *     16)downloadFromDatabase()	  - This method download data to CrashData
+ *     17)actionPerformed() 		  - This method handles most of the user interactions
+ *     
+ **/
 
 public class MIS_Project extends JFrame implements ActionListener {
 
@@ -75,12 +150,16 @@ public class MIS_Project extends JFrame implements ActionListener {
 	private MarkerLayer cyclistsLayer = null;     //
 	private MarkerLayer pedestriansLayer = null;  //
 
-	private Date beginDate;                       //Use selection
-	private Date endDate;                         //Use selection
+	private Date beginDate;                       //User selection
+	private Date endDate;                         //User selection
 	private Date todaysDate;                      //Does not change after startup
 	private Date defaultBeginDate;                //Does not change after startup
 
 
+
+	/***
+	 * Method is the constructor for this class
+	 */
 	public MIS_Project() {
 		super("Pedestrian and Bicyclist Safety Tool");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -95,10 +174,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 	}//end constructor() MIS_Project2
 
 	/**
-	 * @param panels the Panel with cardLayout. 
-	 * 
-	 * This method returns the name of the visible panel in a cardLayout Panel. 
-	 * 
+	 * This method creates the UI for the frame of the application
 	 */
 	protected void createUIforFrame(){
 
@@ -130,9 +206,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 	}//end createUI
 
 	/**
-	 * This method builds the Details Panel
-	 * 
-	 * @returns the details panel
+	 * This method creates the UI for the menu bar of the application
 	 */
 	protected void createMenuBar(){			
 		JMenu fileMenu = new JMenu("File");
@@ -157,7 +231,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 	}//end createMenuBar
 
 	/**
-	 * This method builds the filter Panel
+	 * This method creates the UI for the filter panel of the application
 	 * 
 	 * @returns the details panel
 	 */
@@ -238,7 +312,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 	}//end createfilterPanel
 
 	/**
-	 * This method builds the Details Panel
+	 * This method creates the UI for the details panel of the application
 	 * 
 	 * @returns the details panel
 	 */
@@ -320,7 +394,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 
 	/**
 	 * @param panels the Panel with cardLayout. 
-	 * 
+	 * @return the name of the panel on top/visible
 	 * This method returns the name of the visible panel in a cardLayout Panel. 
 	 * 
 	 */
@@ -358,7 +432,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 	}//end restoreData
 
 	/**
-	 * This method responds to users inputs
+	 * This method creates filtered data based on the user interaction with Filters Panel
 	 */
 	private void createFilteredData(){
 		filteredCrashData = crashData.filterByDate(beginDate, endDate);
@@ -392,7 +466,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * This method responds to users inputs
+	 * This method resets the Date pickers in the Filters Panel
 	 */	
 	private void resetDatePickers(){
 
@@ -412,12 +486,10 @@ public class MIS_Project extends JFrame implements ActionListener {
 		day = cal.get(Calendar.DAY_OF_MONTH);
 		endDatePicker.getModel().setDate(year,month,day);
 
-
-
 	}//end resetDatePickers
 
 	/**
-	 * This method responds to users inputs
+	 * This method disables the Details Panel
 	 */
 	private void disableDetailsPanel(){
 		updateButton.setEnabled(false);
@@ -442,7 +514,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 
 
 	/**
-	 * This method responds to users inputs
+	 * This method handles the delete button
 	 */
 	private void handleDeleteButton(){
 		//updates both the original data and filtered data
@@ -467,13 +539,13 @@ public class MIS_Project extends JFrame implements ActionListener {
 			}else{
 				pedestriansLayer.setEnabled(false);
 			}
-			
+
 			if(cyclists.isSelected()){
 				cyclistsLayer.setEnabled(true);
 			}else{
 				cyclistsLayer.setEnabled(false);
 			}
-			
+
 			caseNumber.setText("");
 			caseType.setEditable(false);
 			caseType.setText("");
@@ -492,7 +564,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 
 
 	/**
-	 * This method responds to users inputs
+	 * This method handles the update button
 	 */
 	private void handleUpdateButton(){
 		//updates both the original data and filtered data
@@ -527,24 +599,24 @@ public class MIS_Project extends JFrame implements ActionListener {
 			pedestriansLayer = filteredCrashData.createPlotData(CaseType.PEDESTRIAN);            //create layer
 			ApplicationTemplate.insertBeforeCompass(worldWindGlobe.getWwd(), cyclistsLayer);     //plot layer
 			ApplicationTemplate.insertBeforeCompass(worldWindGlobe.getWwd(), pedestriansLayer);  //plot layer
-			
+
 			if(pedestrians.isSelected()){
 				pedestriansLayer.setEnabled(true);
 			}else{
 				pedestriansLayer.setEnabled(false);
 			}
-			
+
 			if(cyclists.isSelected()){
 				cyclistsLayer.setEnabled(true);
 			}else{
 				cyclistsLayer.setEnabled(false);
 			}
-			
+
 		}//end if user level == ADMIN
 	}//end handleUpdateButton()
 
 	/**
-	 * This method responds to users inputs
+	 * This method opens a file and parses data
 	 */
 	private void openFileAndParseData(){
 		Boolean old = UIManager.getBoolean("FileChooser.readOnly");  
@@ -605,7 +677,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 	}//end OpenFileAndParseData
 
 	/**
-	 * This method responds to users inputs
+	 * This method uploads the data in CrashData to the database
 	 */
 	private void uploadToDatabase(){
 
@@ -651,7 +723,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 	}//end uploadToDatabase
 
 	/**
-	 * This method responds to users inputs
+	 * This method download data to CrashData from the database
 	 */
 	private void downloadFromDatabase(){
 
@@ -701,13 +773,13 @@ public class MIS_Project extends JFrame implements ActionListener {
 			}else{
 				pedestriansLayer.setEnabled(false);
 			}
-			
+
 			if(cyclists.isSelected()){
 				cyclistsLayer.setEnabled(true);
 			}else{
 				cyclistsLayer.setEnabled(false);
 			}
-	
+
 			databaseStatus.setText("Status: " + filteredCrashData.size() + " row(s) downloaded.");
 
 		}catch (Exception ex) {
@@ -722,6 +794,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 	 * This method responds to users inputs
 	 * 
 	 * @Override actionPerformed (ActionEvent event)
+	 * @param ActionEvent send by classes that can be listened to
 	 */
 	public void actionPerformed(ActionEvent event) {
 
@@ -905,8 +978,6 @@ public class MIS_Project extends JFrame implements ActionListener {
 
 	/**
 	 * Private Inner class to format the date for the datepicker
-	 * 
-	 * @returns a DataLabelFormatter for the datepicker. see method above
 	 */
 	public class DateLabelFormatter extends AbstractFormatter {
 
@@ -930,5 +1001,5 @@ public class MIS_Project extends JFrame implements ActionListener {
 
 	}//end inner class DateLabelFormatter
 
-}//end class MIS_Project2 
+}//end class MIS_Project
 
