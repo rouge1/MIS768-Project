@@ -1,5 +1,13 @@
 package aProject;
 
+/**
+ * The Point class stores geographical marker data 
+ * (latitude, longitude, and elevation) about an accident (point)
+ * for Group #2's term group programming project.
+ * @author Group #2
+ * @version 1.0
+ */
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,37 +20,43 @@ import gov.nasa.worldwind.render.markers.BasicMarkerShape;
 
 public class Point extends BasicMarker{
 
-	//TODO Someday you may want to implement Renderable (see ScalebarHint for example)
+	//TODO Someday Daniel may want to implement Renderable (see ScalebarHint for example)
 	
 	/**
-	 *  No arg-constructor
+	 *  No-args constructor
 	 */
 	public Point() {
 		super(Position.fromDegrees(0,0,0), new BasicMarkerAttributes(Material.WHITE, BasicMarkerShape.SPHERE, 1d));
-	}//end No arg-Constructor
+	} // end of No-arg Constructor
 
 	/**
-	 * @param latitude
-	 * @param longitude
-	 * @param elevation
+	 * This Constructor sets three of the point's arguments: latitude, longitude, and elevation.
+	 * @param latitude double. The point's latitude.
+	 * @param longitude double. The point's longitude.
+	 * @param elevation double. The point's elevation.
 	 */
 	public Point(double latitude, double longitude, double elevation) {
 		super(Position.fromDegrees(latitude,longitude,elevation), new BasicMarkerAttributes(Material.WHITE, BasicMarkerShape.SPHERE, 1d));
-	}// 3 arg constructor
+	} // end of three-args constructor
 
 
 	/**
-	 * @param latitude
-	 * @param longitude
-	 * @param elevation
-	 * @param bma - BasicMarkerAttributes 
+	 * This Constructor sets four of the point's arguments: latitude, longitude,
+	 * elevation, and basic marker attributes (which will display on the interactive
+	 * globe).
+	 * @param latitude double. The point's latitude.
+	 * @param longitude double. The point's longitude.
+	 * @param elevation double. The point's elevation.
+	 * @param bma BasicMarkerAttributes. The point's marker attributes. 
 	 */
 	public Point(double latitude, double longitude, double elevation, BasicMarkerAttributes bma) {
 		super(Position.fromDegrees(latitude,longitude,elevation), bma);
-	}// 4 arg constructor
+	} // end of four-args constructor
 
 	/**
-	 * @return the Latitude
+	 * The getLatitude method returns the point's 
+	 * latitude.
+	 * @return The point's latitude value.
 	 */
 	public double getLatitude(){
 		double latitude = 0;
@@ -50,15 +64,18 @@ public class Point extends BasicMarker{
 		String position = this.getPosition().toString();
 		Pattern latitudePattern = Pattern.compile("\\((.*?)°");
 		Matcher matcher = latitudePattern.matcher(position);
+		
 		if (matcher.find()){
 			latitude = Double.parseDouble(matcher.group(1));
-		}//end if
+		} // end of if
 		
 		return latitude;
-	}//end getLatitude
+	} // end of getLatitude method
 
 	/**
-	 * @return the Longitude
+	 * The getLongitude method returns the point's
+	 * longitude.
+	 * @return The point's longitude value.
 	 */
 	public double getLongitude(){
 		double longitude = 0;
@@ -66,15 +83,18 @@ public class Point extends BasicMarker{
 		String position = this.getPosition().toString();
 		Pattern longitudePattern = Pattern.compile(",(.*?)°");
 		Matcher matcher = longitudePattern.matcher(position);
+		
 		if (matcher.find()){
 			longitude = Double.parseDouble(matcher.group(1));
-		}//end if
+		} // end of if
 		
 		return longitude;
-	}//end getLongitude
+	} // end of getLongitude method
 	
 	/**
-	 * @return the elevation
+	 * The getElevation method returns the point's
+	 * elevation.
+	 * @return The point's elevation value.
 	 */
 	public double getElevation(){
 		double elevation = 0;
@@ -83,38 +103,45 @@ public class Point extends BasicMarker{
 
 		Pattern elevationPattern = Pattern.compile(",.*?,(.*?)\\)$");
 		Matcher matcher = elevationPattern.matcher(position);
+		
 		if (matcher.find()){
 			elevation = Double.parseDouble(matcher.group(1));
-		}//end if
+		} // end of if
 		
 		return elevation;
-	}//end getElevation
+	} // end of getElevation method
 	
 	/**
-	 * @param newLatitude - the new latitude
+	 * The setLatitude method stores a value in 
+	 * the latitude field.
+	 * @param newLatitude double. The new latitude value of the point.
 	 */
 	public void setLatitude(double newLatitude){
 		
 		this.setPosition(Position.fromDegrees(newLatitude,this.getLongitude(),this.getElevation()));
 
-	}//end setLatitude
+	} // end of setLatitude method
 
 	/**
-	 * @param newLongitude - the new longitude
+	 * The setLongitude method stores a value
+	 * in the longitude field.
+	 * @param newLongitude double. The new longitude value of the point.
 	 */
 	public void setLongitude(double newLongitude){
  		
 		this.setPosition(Position.fromDegrees(this.getLatitude(),newLongitude,this.getElevation()));
 		
-	}//end setLongitude
+	} // end of setLongitude method
 	
 	/**
-	 * @param newElevation - the new elevation
+	 * The setElevation method stores a value
+	 * in the elevation field.
+	 * @param newElevation double. The new elevation value of the point.
 	 */
 	public void setElevation(double newElevation){
 		
 		this.setPosition(Position.fromDegrees(this.getLatitude(),this.getLongitude(),newElevation));
 		
-	}//end setElevation
+	} // end of setElevation method
 	
-}//end class Point
+} // end of class Point
