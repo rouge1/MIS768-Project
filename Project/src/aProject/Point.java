@@ -1,13 +1,5 @@
 package aProject;
 
-/**
- * The Point class stores geographical marker data 
- * (latitude, longitude, and elevation) about an accident (point)
- * for Group #2's term group programming project.
- * @author Group #2
- * @version 1.0
- */
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,6 +9,26 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.markers.BasicMarker;
 import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
 import gov.nasa.worldwind.render.markers.BasicMarkerShape;
+
+/**
+ * The Point class stores geographical marker data 
+ * (latitude, longitude, and elevation) about an accident (point)
+ * for Group #2's term group programming project.
+ * 
+ * It has the following methods
+ * 		1) Point()												- no-args constructor
+ * 		2) Point(double, double, double)						- three-args constructor
+ * 		3) Point(double, double, double, BasicMarkerAttributes)	- four-args constructor
+ * 		4) getLatitude()										- This method returns the point's latitude value
+ * 		5) getLongitude()										- This method returns the point's longitude value
+ * 		6) getElevation()										- This method returns the point's elevation value
+ * 		7) setLatitude(double)									- This method sets the point's latitude value
+ * 		8) setLongitude(double)									- This method sets the point's longitude value
+ * 		9) setElevation(double)									- This method sets the point's elevation value			
+ * 
+ * @author Group #2
+ * @version 1.0
+ */
 
 public class Point extends BasicMarker{
 
@@ -112,8 +124,7 @@ public class Point extends BasicMarker{
 	} // end of getElevation method
 	
 	/**
-	 * The setLatitude method stores a value in 
-	 * the latitude field.
+	 * The setLatitude method sets the point's latitude value. 
 	 * @param newLatitude double. The new latitude value of the point.
 	 */
 	public void setLatitude(double newLatitude){
@@ -123,8 +134,7 @@ public class Point extends BasicMarker{
 	} // end of setLatitude method
 
 	/**
-	 * The setLongitude method stores a value
-	 * in the longitude field.
+	 * The setLongitude method sets the point's longitude value.
 	 * @param newLongitude double. The new longitude value of the point.
 	 */
 	public void setLongitude(double newLongitude){
@@ -134,8 +144,7 @@ public class Point extends BasicMarker{
 	} // end of setLongitude method
 	
 	/**
-	 * The setElevation method stores a value
-	 * in the elevation field.
+	 * The setElevation method sets the point's elevation value.
 	 * @param newElevation double. The new elevation value of the point.
 	 */
 	public void setElevation(double newElevation){

@@ -1,7 +1,8 @@
 package aProject;
 
 /**
- * This enum lists all of the possible user level types.
+ * This enum lists all of the possible UserLevelType values.
+ * 
  * @author Group #2
  * @version 1.0
  */

@@ -1,14 +1,5 @@
 package aProject;
 
-/**
- * The Login class stores data and methods: 
- * 1) connecting to --> MySQL aProjectDB database --> LOGIN table;
- * 2) authenticating user-entered username and password credentials with an existing record in the LOGIN table;
- * 3) retrieving userType from the LOGIN table to determine user level type.
- * @author Group #2
- * @version 1.0
- */
-
 import gbl.Anchor;
 import gbl.Fill;
 import gbl.GBConstraints;
@@ -33,6 +24,27 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.sql.*;
 
+/**
+ * The Login class stores data associated with the user's
+ * authentication credentials (username, password, and user type level).
+ * 
+ * It has the following fields
+ * 	
+ * 	1) DB_URL;		// Named constant for MySQL URL
+ * 	2) USER_NAME;	// Named constant for MySQL default username
+ *  3) PASSWORD;	// Named constant for MySQL default password
+ *  
+ *  It has the following methods
+ *  	1) Login()								- constructor
+ *  	2) getPanel()							- This method returns the login panel
+ *  	3) getUserType()						- This method returns the user's UserLevelType value
+ * 		4) actionPerformed(ActionEvent)			- This method calls the ActionEvent when the user clicks a button
+ * 
+ * @author Group #2
+ * @version 1.0
+ */
+
+
 public class Login extends JButton implements ActionListener{
 
 	// Create named constants for the MySQL URL, username, and password.
@@ -46,7 +58,7 @@ public class Login extends JButton implements ActionListener{
 	private String userType;		 // Variable to hold user type associated with verified username/password; retrieved from database.
 
 	/**
-	 * Create the frame.
+	 * Constructor method to create the frame.
 	 */
 	public Login() {
 		super("Login");
@@ -99,9 +111,8 @@ public class Login extends JButton implements ActionListener{
 	} // end of getPanel method
 
 	/**
-	 * The getUserType method returns the user
-	 * level type.
-	 * @return The user's user level type.
+	 * The getUserType method returns the UserLevelType.
+	 * @return The user's UserLevelType value.
 	 */
 	public UserLevelType getUserType() {
 		if(userType.equals(UserLevelType.ADMIN.toString())){
@@ -112,7 +123,8 @@ public class Login extends JButton implements ActionListener{
 	} // end of getUserType method
 
 	/**
-	 * The actionPerformed method
+	 * The actionPerformed method to calls the action event
+	 * when a button is clicked.
 	 * @param userType the userType to set
 	 * @Override
 	 */
@@ -143,7 +155,7 @@ public class Login extends JButton implements ActionListener{
 					String t = results.getString("userType");
 					
 					// Compare user-entered data with existing records from LOGIN table.
-					// If user is authenticated, retrieve corresponding userType value.
+					// If user is authenticated, retrieve corresponding userType/UserLevelType value.
 					if((u.equals(user)) && (p.equals(pw))) {
 						flag = true;
 						userType = t;
@@ -151,7 +163,7 @@ public class Login extends JButton implements ActionListener{
 					} // end if	
 				} // end of while loop
 
-				// If user is authenticated, determine which action performed method to fire by userType.
+				// If user is authenticated, determine which action performed method to fire by UserLevelType.
 				if(flag = true){
 					if(userType.equals(UserLevelType.ADMIN.toString())){
 						this.fireActionPerformed(new ActionEvent("",ActionEvent.ACTION_PERFORMED,"ADMIN"));

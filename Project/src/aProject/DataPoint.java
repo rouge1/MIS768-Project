@@ -1,13 +1,32 @@
 package aProject;
 
+import java.util.Date;
+
 /**
  * The DataPoint class stores data about an accident (case)
- * for Group #2's term group programming project.
+ * represented by a data point for Group #2's term group programming project.
+ * 
+ * It has the following fields
+ * 
+ * 	1) caseNumber;				// Variable to store accident case number
+ * 	2) theCaseType;				// Variable to store the accident's CaseType value
+ * 	3) theDate;					// Variable to store the date of the accident
+ * 
+ * It has the following methods
+ * 		1) DataPoint(int, CaseType, Date, double, double)			- constructor
+ * 		2) DataPoint(int, CaseType, Date, double, double, double)	- constructor
+ * 		3) getCaseNumber()											- This method returns the data point's CaseNumber value
+ * 		4) setCaseNumber(int)										- This method sets the data point's CaseNumber value
+ * 		5) getCaseType()											- This method returns the data point's CaseType value
+ * 		6) setCaseType(CaseType)									- This method sets the data point's CaseType value
+ * 		7) getTheDate()												- This method returns the data point's case date (accident date)
+ * 		8) setTheDate(Date)											- This method sets the data point's case date (accident date)
+ * 		9) toString()												- This method returns a String representation of the data in the class
+ * 
  * @author Group #2
  * @version 1.0
  */
 
-import java.util.Date;
 
 public class DataPoint extends Point{
 	private int caseNumber;			// Variable to store accident's case number.
@@ -95,7 +114,7 @@ public class DataPoint extends Point{
 	} // end of getTheDate method
 	
 	/**
-	 * The setTheDate method sets the data point's case date.
+	 * The setTheDate method sets the data point's case date (accident date).
 	 * @param theDate Date. The data point's case date.
 	 */
 	public void setTheDate(Date theDate) {
@@ -103,8 +122,8 @@ public class DataPoint extends Point{
 	} // end of setTheDate method
 	
 	/**
-	 * The toString method sets the data point's attributes to String
-	 * and overrides the superclass's (Point class) method.
+	 * The toString method sets the data point's attributes to a
+	 * String representation and overrides the superclass's (Point class) method.
 	 * @Override
 	 */
 	public String toString() {
