@@ -171,7 +171,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 	/**
 	 * This method creates the UI for the filter panel of the application
 	 * 
-	 * @returns the details panel
+	 * @return the details panel
 	 */
 	protected JPanel createfilterPanel(){
 
@@ -252,7 +252,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 	/**
 	 * This method creates the UI for the details panel of the application
 	 * 
-	 * @returns the details panel
+	 * @return the details panel
 	 */
 	protected JPanel createDetailsPanel(){			
 
@@ -730,7 +730,6 @@ public class MIS_Project extends JFrame implements ActionListener {
 	/**
 	 * This method responds to users inputs
 	 * 
-	 * @Override actionPerformed (ActionEvent event)
 	 * @param event sent by classes that can be listened to
 	 */
 	public void actionPerformed(ActionEvent event) {

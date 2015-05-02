@@ -108,7 +108,6 @@ public class DataPoint extends Point{
 	/**
 	 * The toString method sets the data point's attributes to a
 	 * String representation and overrides the superclass's (Point class) method.
-	 * @Override
 	 */
 	public String toString() {
 		String temp = String.format("%10s %10s %10s %23s", caseNumber, theCaseType, theDate, this.getPosition().toString());

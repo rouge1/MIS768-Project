@@ -14,7 +14,7 @@ public enum CaseType {
 
 	/**
 	 * This method sets the CaseType value.
-	 * @param s String. The accident's case type.
+	 * @param input String. The accident's case type.
 	 * @return The accident's (data point's) CaseType value.
 	 */
 	static public CaseType setType(String input){

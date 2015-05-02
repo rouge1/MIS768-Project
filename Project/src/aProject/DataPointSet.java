@@ -237,7 +237,7 @@ public class DataPointSet {
 
 	/**
 	 * This method parses csv data into datapoints and creates an array list<p>
-	 * The assumption is the data layout is as follows:<p>&nbsp &nbsp &nbsp &nbsp &nbsp
+	 * The assumption is the data layout is as follows:<p>
 	 *        ID, caseNumber, caseType, MM/dd/yyyy, longitude, latitude, elevation
 	 * @param theFile is the file name of the csv data to parse into datapoints and create an arrayList from.     
 	 */
