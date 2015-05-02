@@ -3,25 +3,9 @@ package aProject;
 import java.util.Date;
 
 /**
- * The DataPoint class stores data about an accident (case)
- * represented by a data point for Group #2's term group programming project.
- * 
- * It has the following fields
- * 
- * 	1) caseNumber;				// Variable to store accident case number
- * 	2) theCaseType;				// Variable to store the accident's CaseType value
- * 	3) theDate;					// Variable to store the date of the accident
- * 
- * It has the following methods
- * 		1) DataPoint(int, CaseType, Date, double, double)			- constructor
- * 		2) DataPoint(int, CaseType, Date, double, double, double)	- constructor
- * 		3) getCaseNumber()											- This method returns the data point's CaseNumber value
- * 		4) setCaseNumber(int)										- This method sets the data point's CaseNumber value
- * 		5) getCaseType()											- This method returns the data point's CaseType value
- * 		6) setCaseType(CaseType)									- This method sets the data point's CaseType value
- * 		7) getTheDate()												- This method returns the data point's case date (accident date)
- * 		8) setTheDate(Date)											- This method sets the data point's case date (accident date)
- * 		9) toString()												- This method returns a String representation of the data in the class
+ * The DataPoint class extends the Point class and
+ * stores data about an accident (case)
+ * represented by a data point.
  * 
  * @author Group #2
  * @version 1.0
@@ -71,7 +55,7 @@ public class DataPoint extends Point{
 	/**
 	 * The getCaseNumber method returns the data point's
 	 * case number.
-	 * @return The data point's case number.
+	 * @return The data point's case number value.
 	 */
 	public int getCaseNumber() {
 		return caseNumber;
@@ -89,7 +73,7 @@ public class DataPoint extends Point{
 	/**
 	 * The getCaseType method returns the data point's
 	 * case type.
-	 * @return The data point's case type.
+	 * @return The data point's case type value.
 	 */
 	public CaseType getCaseType() {
 		return theCaseType;
@@ -107,7 +91,7 @@ public class DataPoint extends Point{
 	/**
 	 * The getTheDate method returns the data point's 
 	 * case date (accident date).
-	 * @return The data point's case date.
+	 * @return The data point's case date value.
 	 */
 	public Date getTheDate() {
 		return theDate;

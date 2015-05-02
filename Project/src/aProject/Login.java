@@ -28,18 +28,6 @@ import java.sql.*;
  * The Login class stores data associated with the user's
  * authentication credentials (username, password, and user type level).
  * 
- * It has the following fields
- * 	
- * 	1) DB_URL;		// Named constant for MySQL URL
- * 	2) USER_NAME;	// Named constant for MySQL default username
- *  3) PASSWORD;	// Named constant for MySQL default password
- *  
- *  It has the following methods
- *  	1) Login()								- constructor
- *  	2) getPanel()							- This method returns the login panel
- *  	3) getUserType()						- This method returns the user's UserLevelType value
- * 		4) actionPerformed(ActionEvent)			- This method calls the ActionEvent when the user clicks a button
- * 
  * @author Group #2
  * @version 1.0
  */
@@ -125,7 +113,7 @@ public class Login extends JButton implements ActionListener{
 	/**
 	 * The actionPerformed method to calls the action event
 	 * when a button is clicked.
-	 * @param userType the userType to set
+	 * @param event ActionEvent. The action event called by selecting the Submit button.
 	 * @Override
 	 */
 	public void actionPerformed(ActionEvent event) {

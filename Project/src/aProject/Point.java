@@ -12,19 +12,7 @@ import gov.nasa.worldwind.render.markers.BasicMarkerShape;
 
 /**
  * The Point class stores geographical marker data 
- * (latitude, longitude, and elevation) about an accident (point)
- * for Group #2's term group programming project.
- * 
- * It has the following methods
- * 		1) Point()												- no-args constructor
- * 		2) Point(double, double, double)						- three-args constructor
- * 		3) Point(double, double, double, BasicMarkerAttributes)	- four-args constructor
- * 		4) getLatitude()										- This method returns the point's latitude value
- * 		5) getLongitude()										- This method returns the point's longitude value
- * 		6) getElevation()										- This method returns the point's elevation value
- * 		7) setLatitude(double)									- This method sets the point's latitude value
- * 		8) setLongitude(double)									- This method sets the point's longitude value
- * 		9) setElevation(double)									- This method sets the point's elevation value			
+ * (latitude, longitude, and elevation) about an accident (point).	
  * 
  * @author Group #2
  * @version 1.0

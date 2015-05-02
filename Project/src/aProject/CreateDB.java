@@ -5,13 +5,7 @@ import java.sql.*;
 /**
  * The CreateDB class stores the methods on how to connect to MySQL, create the aProjectDB database,
  * create the caseLocations and login tables, and populate the login table with login data for three 
- * users for Group #2's term group programming project.
- * 
- * It has the following methods
- * 		1) DB()									- This method creates a connection to MySQL and calls the createDatabase, buildCaseLocationsTable and buildLoginTable methods
- * 		2) createDatabase(Connection)			- This method creates the project database
- * 		3) buildCaseLocationsTable(Connection)	- This method creates the caseLocations table
- * 		4) buildLoginTable(Connection)			- This method creates the login table and inserts three records into the table
+ * users.
  * 
  * @author Group #2
  * @version 1.0
@@ -20,7 +14,7 @@ import java.sql.*;
 public class CreateDB {
 	
 	/**
-	 * The DB method: first creates a connection to MySQL
+	 * The DB method creates a connection to MySQL
 	 * and calls on the createDatabase, buildCaseLocationsTable and buildLoginTable
 	 * methods to create the project database and tables.
 	 */
@@ -127,7 +121,8 @@ public class CreateDB {
 		} // end of buildCaseLocationsTable method
 
 		/**
-		 * The buildLoginTable method creates the Login table and adds some rows to it.
+		 * The buildLoginTable method creates the Login table 
+		 * and adds three records to it.
 		 * @param conn. Connection to the MySQL database.
 		 */
 		public static void buildLoginTable(Connection conn){
