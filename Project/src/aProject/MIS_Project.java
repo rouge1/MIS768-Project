@@ -37,123 +37,61 @@ import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
 /**
- * This class is the main class for the "Pedestrian and Bicyclist Safety Tool"
- * 
- * The program provides end users with an interactive tool for 
+ * This class is the main class for the "Pedestrian and Bicyclist Safety Tool" 
+ * <p>The program provides end users with an interactive tool for 
  * crash data point mapping. Using this software, state and local agencies can take steps 
  * to facilitate safer pedestrian and bicycle travel by identifying “hot spot” areas where 
  * crashes are more likely to occur. Once these locations have been determined, 
  * targeted initiatives and strategies can be implemented to increase the 
  * safety of pedestrian and bicycle commuters.
- *    
- * It has the following fields
- *  
- *	1)cards;                          //a panel holds loginScreen and the main app
- *	2)cardLayoutController            //layout controller for panel holding loginScreen/main App
- *	3)canvasSize                      //preferred size of app
- *
- *	4)caseNumber;                     //Textfield in Details Panel that displays case number 
- *	5)caseType;                       //Textfield in Details Panel that displays case type
- *	6)caseDate;                       //Textfield in Details Panel that displays case date
- *	7)caseLongitude;                  //Textfield in Details Panel that displays longitude
- *	8)caseLatitude;                   //Textfield in Details Panel that displays latitude
- *	9)caseElevation;                  //Textfield in Details Panel that displays elevation
- *	10)updateButton;                  //Button in Details Panel to update DataPoint data when user login as ADMIN
- *	11)deleteButton;                  //Button in Details Panel to delete DataPoint data when user login as ADMIN
- *
- *	12)applyDateFilterButton;         //Button in Filters Panel to apply a date filter
- *	13)resetDateFilterButton;         //Button in Filters Panel to reset data to when CSV file was loaded
- *	14)uploadToDatabase;              //Button in Details Panel to upload data to the database
- *	15)downloadFromDatabase;          //Button in Details Panel to download data from the database
- *	16)databaseStatus;                //Text field showing the status of database processes
- *	17loginScreen;                    //The login in screen
- *
- *	18)endDatePicker;                 //Date calendar picker for end date filter
- *	19)beginDatePicker;               //Date calendar picker for end date filter
- *	20)pedestrians;                   //JCheckBox to filter out pedstrians
- *	21)cyclists;                      //JCheckBox to filter out cyclists
- *
- *	22)crashData;                     //DataPointSet that holds the original data loaded from the CSV file 
- *	23)filteredCrashData;             //DataPointSet that holds the data filtered by the user input
- *
- *	24)worldWindGlobe;				  //reference to the globe
- *	25)cyclistsLayer                  //This is the canvas that filteredCrashData plots cyclists data points
- *	26)pedestriansLayer               //This is the canvas that filteredCrashData plots pedestrians data points
- *
- *	27)beginDate;                     //User selection of begin date
- *	28)endDate;                       //User selection of end date
- *	29)todaysDate;                    //Does not change after startup, save todays date
- *	30)defaultBeginDate;              //Does not change after startup, save the default begin date
- *
- *  31)DB_URL                         //Constants for location of database
- *	32)USERNAME                       //Constants for username to database
- * 	33)PASSWORD                       //Constants for password to database
- *
- *  
- *  
- * It has the following methods
- *     1)  MIS_Project()              - empty constructor
- *     2)  createUIforFrame()         - creates the UI for the frame of the application
- *     3)  createMenuBar()            - creates the UI for the menu bar of the application
- *     4)  createfilterPanel()        - creates the UI for the filter panel of the application
- *     5)  createDetailsPanel()       - creates the UI for the details panel of the application
- *     6)  nameOfVisiblePanel(JPanel) - returns the name of the panel on top/visible
- *     7)  restoreData()              - This method restores data from the CSV file
- *     8)  createFilteredData()       - This method creates filtered data based on the user interaction with Filters Panel
- *     9)  resetFilters()             - This method resets the Filters Panel  
- *     10) resetDatePickers()         - This method resets the Date pickers in the Filters Panel
- *     11) disableDetailsPanel()      - This method disables the Details Panel
- *     12) handleDeleteButton()       - This method handles the delete button
- *     13) handleUpdateButton()		  - This method handles the update button
- *     14)openFileAndParseData()	  - This method opens a file and parses data
- *     15)uploadToDatabase()		  - This method uploads the data in CrashData
- *     16)downloadFromDatabase()	  - This method download data to CrashData
- *     17)actionPerformed() 		  - This method handles most of the user interactions
- *     
+ * 
+ * @author Group #2
+ * @version 1.0
+ * 
  **/
 
 public class MIS_Project extends JFrame implements ActionListener {
 
-	final String DB_URL = "jdbc:mysql://localhost:3306/aProjectDB";
-	final String USERNAME = "root";
-	final String PASSWORD = "";
+	final String DB_URL = "jdbc:mysql://localhost:3306/aProjectDB";//Constants for location of database
+	final String USERNAME = "root";    						 //Constants for username to database
+	final String PASSWORD = ""; 							 //Constants for password to database
 
-	private JPanel cards;                                    //a panel that uses CardLayout
-	private CardLayout cardLayoutController; 
-	private Dimension canvasSize = new Dimension(1000, 800); //preferred size
+	private JPanel cards;                                    //a panel holds loginScreen and the main app
+	private CardLayout cardLayoutController;				 //layout controller for panel holding loginScreen/main App
+	private Dimension canvasSize = new Dimension(1000, 800); //preferred size of app
 
-	private JTextField caseNumber; 
-	private JTextField caseType;  
-	private JTextField caseDate; 
-	private JTextField caseLongitude;   
-	private JTextField caseLatitude;   
-	private JTextField caseElevation; 
-	private JButton updateButton;
-	private JButton deleteButton;
+	private JTextField caseNumber; 							 //Textfield in Details Panel that displays case number 
+	private JTextField caseType;   							 //Textfield in Details Panel that displays case type
+	private JTextField caseDate; 							 //Textfield in Details Panel that displays case date
+	private JTextField caseLongitude;   					 //Textfield in Details Panel that displays longitude
+	private JTextField caseLatitude;     					 //Textfield in Details Panel that displays latitude
+	private JTextField caseElevation;  						 //Textfield in Details Panel that displays elevation
+	private JButton updateButton;							 //Button in Details Panel to update DataPoint data when user login as ADMIN
+	private JButton deleteButton;							 //Button in Details Panel to delete DataPoint data when user login as ADMIN
 
-	private JButton applyDateFilterButton;
-	private JButton resetDateFilterButton;
-	private JButton uploadToDatabase;
-	private JButton downloadFromDatabase;
-	private JTextField databaseStatus;
-	private Login loginScreen;
+	private JButton applyDateFilterButton;					 //Button in Filters Panel to apply a date filter
+	private JButton resetDateFilterButton; 					 //Button in Filters Panel to reset data to when CSV file was loaded
+	private JButton uploadToDatabase;						 //Button in Details Panel to upload data to the database
+	private JButton downloadFromDatabase;					 //Text field showing the status of database processes
+	private JTextField databaseStatus;						 //Text field showing the status of database processes
+	private Login loginScreen;								 //The login in screen
 
-	private JDatePickerImpl endDatePicker;
-	private JDatePickerImpl beginDatePicker;
-	private JCheckBox pedestrians;
-	private JCheckBox cyclists;
+	private JDatePickerImpl endDatePicker;					 //Date calendar picker for end date filter
+	private JDatePickerImpl beginDatePicker;				 //Date calendar picker for begin date filter
+	private JCheckBox pedestrians;							 //JCheckBox to filter out pedstrians
+	private JCheckBox cyclists;								 //JCheckBox to filter out cyclists
 
-	private DataPointSet crashData;
-	private DataPointSet filteredCrashData;
+	private DataPointSet crashData;							 //DataPointSet that holds the original data loaded from the CSV file 
+	private DataPointSet filteredCrashData;					 //DataPointSet that holds the data filtered by the user input
 
-	ApplicationTemplate.AppPanel worldWindGlobe;
-	private MarkerLayer cyclistsLayer = null;     //
-	private MarkerLayer pedestriansLayer = null;  //
+	ApplicationTemplate.AppPanel worldWindGlobe;			 //reference to the globe
+	private MarkerLayer cyclistsLayer = null;     			 //This is the canvas that filteredCrashData plots cyclists data points
+	private MarkerLayer pedestriansLayer = null;  			 //This is the canvas that filteredCrashData plots pedestrians data points
 
-	private Date beginDate;                       //User selection
-	private Date endDate;                         //User selection
-	private Date todaysDate;                      //Does not change after startup
-	private Date defaultBeginDate;                //Does not change after startup
+	private Date beginDate;                       			 //User selection of begin date
+	private Date endDate;                        			 //User selection of end date
+	private Date todaysDate;                    			 //Does not change after startup, save todays date
+	private Date defaultBeginDate;              			 //Does not change after startup, save the default begin date
 
 
 
@@ -393,10 +331,9 @@ public class MIS_Project extends JFrame implements ActionListener {
 	}//end createDetailsPanel
 
 	/**
+	 * This method returns the name of the visible panel in a cardLayout Panel. 
 	 * @param panels the Panel with cardLayout. 
 	 * @return the name of the panel on top/visible
-	 * This method returns the name of the visible panel in a cardLayout Panel. 
-	 * 
 	 */
 	protected String nameOfVisiblePanel(JPanel panels){
 		JPanel card = null;
@@ -410,7 +347,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 
 
 	/**
-	 * This method restores data opened originally.
+	 * This method restores data opened originally.<br>
 	 * It includes data that has been updated on the details panel
 	 */
 	private void restoreData(){
@@ -455,7 +392,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 	}//end createFilteredData
 
 	/**
-	 * This method responds to users inputs
+	 * This method resets the Filters Panel  
 	 */	
 	private void resetFilters(){
 		pedestriansLayer.setEnabled(true);
@@ -794,7 +731,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 	 * This method responds to users inputs
 	 * 
 	 * @Override actionPerformed (ActionEvent event)
-	 * @param ActionEvent send by classes that can be listened to
+	 * @param event sent by classes that can be listened to
 	 */
 	public void actionPerformed(ActionEvent event) {
 
@@ -911,6 +848,11 @@ public class MIS_Project extends JFrame implements ActionListener {
 
 	}//end actionPerformed
 
+	
+	/**
+	 * This is the main method
+	 * @param args sent into the main method
+	 */
 	public static void main(String[] args) {
 
 		//Schedule a job for the event dispatch thread:
@@ -959,7 +901,7 @@ public class MIS_Project extends JFrame implements ActionListener {
 						deleteButton.setEnabled(true);
 					}
 
-					if(!caseLongitude.isEditable()){
+					if(!caseLongitude.isEditable() && filteredCrashData.getUserLevel() == UserLevelType.ADMIN){
 						caseLongitude.setEditable(true);
 						caseLatitude.setEditable(true);
 						caseElevation.setEditable(true);
