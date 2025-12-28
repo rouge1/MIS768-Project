@@ -37,8 +37,8 @@ public class Login extends JButton implements ActionListener{
 
 	// Create named constants for the MySQL URL, username, and password.
 	final String DB_URL = "jdbc:mysql://localhost:3306/aProjectDB";
-	final String USER_NAME = "root";
-	final String PASSWORD = "";
+	final String USER_NAME = "mis768";
+	final String PASSWORD = "Password@123";
 
 	private JPanel loginPanel;
 	private JTextField txtUsername;  // Textfield for user to enter username.

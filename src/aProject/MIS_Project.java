@@ -53,8 +53,8 @@ import org.jdatepicker.impl.UtilDateModel;
 public class MIS_Project extends JFrame implements ActionListener {
 
 	final String DB_URL = "jdbc:mysql://localhost:3306/aProjectDB";//Constants for location of database
-	final String USERNAME = "root";    						 //Constants for username to database
-	final String PASSWORD = ""; 							 //Constants for password to database
+	final String USERNAME = "mis768";    							 //Constants for username to database
+	final String PASSWORD = "Password@123"; 						 //Constants for password to database
 
 	private JPanel cards;                                    //a panel holds loginScreen and the main app
 	private CardLayout cardLayoutController;				 //layout controller for panel holding loginScreen/main App

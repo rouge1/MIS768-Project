@@ -24,8 +24,8 @@ public class CreateDB {
 		// NOTE: This value is specific for MySQL.
 		final String DB_URL = "jdbc:mysql://localhost:3306/";
 	    final String DB_GROUP_URL = "jdbc:mysql://localhost:3306/aProjectDB";
-	    final String USERNAME = "root";
-	    final String PASSWORD = "";
+	    final String USERNAME = "mis768";
+	    final String PASSWORD = "Password@123";
 
 	    try {
 	         	// Create a connection to the database.
