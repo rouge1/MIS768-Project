@@ -40,7 +40,7 @@ import org.jdatepicker.impl.UtilDateModel;
  * This class is the main class for the "Pedestrian and Bicyclist Safety Tool" 
  * <p>The program provides end users with an interactive tool for 
  * crash data point mapping. Using this software, state and local agencies can take steps 
- * to facilitate safer pedestrian and bicycle travel by identifying “hot spot” areas where 
+ * to facilitate safer pedestrian and bicycle travel by identifying "hot spot" areas where 
  * crashes are more likely to occur. Once these locations have been determined, 
  * targeted initiatives and strategies can be implemented to increase the 
  * safety of pedestrian and bicycle commuters.

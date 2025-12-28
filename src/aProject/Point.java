@@ -62,7 +62,7 @@ public class Point extends BasicMarker{
 		double latitude = 0;
 		
 		String position = this.getPosition().toString();
-		Pattern latitudePattern = Pattern.compile("\\((.*?)°");
+		Pattern latitudePattern = Pattern.compile("\\((.*?)\u00B0");
 		Matcher matcher = latitudePattern.matcher(position);
 		
 		if (matcher.find()){
@@ -81,7 +81,7 @@ public class Point extends BasicMarker{
 		double longitude = 0;
 		
 		String position = this.getPosition().toString();
-		Pattern longitudePattern = Pattern.compile(",(.*?)°");
+		Pattern longitudePattern = Pattern.compile(",(.*?)\u00B0");
 		Matcher matcher = longitudePattern.matcher(position);
 		
 		if (matcher.find()){
