@@ -1,25 +1,90 @@
-Greetings,<br>
-    This is a project for MIS768 @ UNLV. We are using the World Wind Java SDK to visualize crash data<p>
-    
-Background and Business Case<br>
+# Pedestrian and Bicyclist Safety Tool - Application
 
-Bicyclists and pedestrians are a class of vulnerable road users that are often overrepresented in fatal or incapacitating injury crash statistics. 
-While passenger car fatalities have shown sharp declines in the last decade, pedestrian and bike fatalities have remained relatively constant. 
-Although Department of Transportation (DOT) agencies have extensive road safety audit programs that utilize criteria based on the ratio of crashes to average daily traffic, DOT programs do not target locations with a high number of bike/pedestrian crashes since bicycle and pedestrian counts are not recorded.  Agencies face the current challenge of allocating funds and resources equitably among urban and rural areas when designing and planning communities to maximize bicycle and pedestrian safety, thereby safeguarding the lives of the valuable citizenry.<p>
-    
-Scope of the project:<br> 
-The objective of this project is to develop a software tool (both desktop & web tool) that can be utilized to identify locations that are prone to high bicycle and pedestrian crashes also known as �hot spots.� In addition, the tool can be used to predict an approximation of crashes in a given location based on certain conditions like roadway, socio-economic status, demographic factors, etc..<p>
-    
+> Core application source code and resources
 
-The World Wind Java SDK provides a starting point for developing a NASA World Wind-enabled application for an Eclipse-based environment.
+## 📁 Directory Structure
 
-:warning: If you are attempting to use World Wind in an RCP Plugin, visit the [world-wind-java-sdk-rcp](https://github.com/unofficial-nasa/world-wind-java-sdk-rcp) project.
+```
+├── src/aProject/           # Java source files
+│   ├── MIS_Project.java    # Main application class
+│   ├── Login.java          # User authentication
+│   ├── CreateDB.java       # Database initialization
+│   ├── DataPoint.java      # Crash data model
+│   ├── DataPointSet.java   # Data collection management
+│   ├── Point.java          # Geographic marker class
+│   ├── CaseType.java       # Accident type enum
+│   └── UserLevelType.java  # User role enum
+├── bin/                    # Compiled .class files
+├── doc/                    # Generated JavaDoc
+├── config/                 # WorldWind configuration
+├── images/                 # Globe textures & icons
+└── resources/              # Military standard symbols
+```
 
-# About NASA World Wind
-NASA's World Wind SDK provides the ability to display and interact with geographic data.
+## 🔧 Class Overview
 
-Visit the official page at: http://worldwind.arc.nasa.gov/java/
+### Core Classes
 
-NASA Open Source Agreement v1.3
+| Class | Description |
+|-------|-------------|
+| `MIS_Project` | Main JFrame application with GUI, event handling, and database operations |
+| `Login` | Authentication panel that verifies credentials against MySQL |
+| `CreateDB` | Static methods to create database schema and seed data |
+
+### Data Model
+
+| Class | Description |
+|-------|-------------|
+| `DataPoint` | Represents a single crash with case number, type, date, and location |
+| `DataPointSet` | ArrayList wrapper with parsing, filtering, and plotting methods |
+| `Point` | Extends WorldWind `BasicMarker` for geographic positioning |
+
+### Enums
+
+| Enum | Values |
+|------|--------|
+| `CaseType` | `BICYCLE`, `PEDESTRIAN` |
+| `UserLevelType` | `USER`, `ADMIN` |
+
+## 🗄️ Database Schema
+
+### Table: `caseLocations`
+| Column | Type | Description |
+|--------|------|-------------|
+| caseID | MEDIUMINT | Auto-increment primary key |
+| caseNumber | CHAR(25) | Case identifier |
+| caseType | CHAR(10) | BICYCLE or PEDESTRIAN |
+| caseDate | DATE | Date of incident |
+| caseLat | CHAR(10) | Latitude |
+| caseLong | CHAR(10) | Longitude |
+| caseElev | CHAR(10) | Elevation |
+
+### Table: `login`
+| Column | Type | Description |
+|--------|------|-------------|
+| userID | MEDIUMINT | Auto-increment primary key |
+| userName | CHAR(10) | Username |
+| password | CHAR(25) | Password |
+| userType | CHAR(5) | USER or ADMIN |
+
+## 📚 Dependencies
+
+- NASA WorldWind Java SDK
+- JDatePicker library
+- MySQL Connector/J
+- Custom `gbl` package (GridBagLayout helpers)
+
+## 📖 JavaDoc
+
+Pre-generated documentation is available in the `doc/` folder. Open `doc/index.html` in a browser.
+
+---
+
+### NASA WorldWind
+
+This project uses NASA's WorldWind SDK for 3D globe visualization.
+
+- **Official Page:** https://worldwind.arc.nasa.gov/java/
+- **License:** [NASA Open Source Agreement v1.3](./NASA_Open_Source_Agreement_1.3.txt)
 
 

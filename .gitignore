@@ -1,1 +1,17 @@
-bin
+# Compiled class files
+bin/
+*.class
+
+# IDE files
+.idea/
+.settings/
+.classpath
+.project
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
