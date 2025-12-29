@@ -56,6 +56,7 @@ public class Login extends JButton implements ActionListener{
 		
 		loginPanel.add(new JLabel("Password: "), new GBConstraints(0,1).anchor(Anchor.CENTER));
 		txtPassword = new JTextField();
+		txtPassword.addActionListener(this);
 		loginPanel.add(txtPassword, new GBConstraints(1,1).fill(Fill.HORIZONTAL));
 		
 		JTextField text = new JTextField("Please enter your user authentication information.");
@@ -106,7 +107,7 @@ public class Login extends JButton implements ActionListener{
 	 */
 	public void actionPerformed(ActionEvent event) {
 
-		if(event.getActionCommand().equals("Submit")){
+		if(event.getActionCommand().equals("Submit") || event.getSource() == txtPassword){
 			String u = txtUsername.getText();
 			String p = txtPassword.getText();
 			
