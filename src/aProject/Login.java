@@ -22,7 +22,6 @@ import javax.swing.JButton;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.sql.*;
 
 /**
  * The Login class stores data associated with the user's
@@ -35,27 +34,16 @@ import java.sql.*;
 
 public class Login extends JButton implements ActionListener{
 
-	// Create named constants for the MySQL URL, username, and password.
-	final String DB_URL = "jdbc:mysql://localhost:3306/aProjectDB";
-	final String USER_NAME = "mis768";
-	final String PASSWORD = "Password@123";
-
 	private JPanel loginPanel;
 	private JTextField txtUsername;  // Textfield for user to enter username.
 	private JTextField txtPassword;  // Textfield for user to enter password.
-	private String userType;		 // Variable to hold user type associated with verified username/password; retrieved from database.
+	private String userType;		 // Variable to hold user type associated with verified username/password.
 
 	/**
 	 * Constructor method to create the frame.
 	 */
 	public Login() {
 		super("Login");
-
-		// Create a new CreateDB object.
-		CreateDB db = new CreateDB();
-		
-		// Execute the DB() method.
-		db.DB();
 
 		loginPanel = new JPanel();
 		GridBagLayout gbl = new GridBagLayout();
@@ -121,55 +109,18 @@ public class Login extends JButton implements ActionListener{
 		if(event.getActionCommand().equals("Submit")){
 			String u = txtUsername.getText();
 			String p = txtPassword.getText();
-			boolean flag = false;
-
-		try {
-				// Connect to the database
-				Connection conn = DriverManager.getConnection(DB_URL, USER_NAME, PASSWORD);
-
-				// Create a Statement object
-				Statement stmt = conn.createStatement();
-				
-				// Extract all records from the LOGIN table.
-				String sqlStatement = "SELECT userName, password, userType FROM login";
-				
-				// Store all records from LOGIN table into ResultSet variable.
-				ResultSet results = stmt.executeQuery(sqlStatement);
-
-				// Loop through records in results to authenticate user.
-				while (results.next()) {
-					String user = results.getString("userName");
-					String pw = results.getString("password");
-					String t = results.getString("userType");
-					
-					// Compare user-entered data with existing records from LOGIN table.
-					// If user is authenticated, retrieve corresponding userType/UserLevelType value.
-					if((u.equals(user)) && (p.equals(pw))) {
-						flag = true;
-						userType = t;
-						System.out.println("the usertype: " + getUserType());
-					} // end if	
-				} // end of while loop
-
-				// If user is authenticated, determine which action performed method to fire by UserLevelType.
-				if(flag = true){
-					if(userType.equals(UserLevelType.ADMIN.toString())){
-						this.fireActionPerformed(new ActionEvent("",ActionEvent.ACTION_PERFORMED,"ADMIN"));
-					}else{
-						this.fireActionPerformed(new ActionEvent("",ActionEvent.ACTION_PERFORMED,"USER"));
-					} // end of if
-				}
-				// If user is not authenticated, display error message and clear textfields.
-				else if(flag == false){
-					JOptionPane.showMessageDialog(null, "Username and Password not found.");
-					txtUsername.setText("");
-					txtPassword.setText("");
-				} // end of if
-
-			}catch(Exception ex) {
-				JOptionPane.showMessageDialog(null, "Please check your user credentials.");
-			} // end of try/catch
-
+			
+			// Simple hardcoded authentication
+			if("test".equals(u) && "test".equals(p)) {
+				userType = UserLevelType.ADMIN.toString();
+				System.out.println("Login successful - User type: " + getUserType());
+				this.fireActionPerformed(new ActionEvent("",ActionEvent.ACTION_PERFORMED,"ADMIN"));
+			} else {
+				JOptionPane.showMessageDialog(null, "Invalid username or password. Use 'test' for both.");
+				txtUsername.setText("");
+				txtPassword.setText("");
+			}
+			
 			this.doClick();
 		} // end of if
 

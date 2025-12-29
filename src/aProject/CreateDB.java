@@ -4,8 +4,7 @@ import java.sql.*;
 
 /**
  * The CreateDB class stores the methods on how to connect to MySQL, create the aProjectDB database,
- * create the caseLocations and login tables, and populate the login table with login data for three 
- * users.
+ * and create the caseLocations and login tables.
  * 
  * @author Group #2
  * @version 1.0
@@ -121,8 +120,7 @@ public class CreateDB {
 		} // end of buildCaseLocationsTable method
 
 		/**
-		 * The buildLoginTable method creates the Login table 
-		 * and adds three records to it.
+		 * The buildLoginTable method creates the Login table.
 		 * @param conn. Connection to the MySQL database.
 		 */
 		public static void buildLoginTable(Connection conn){
@@ -137,30 +135,6 @@ public class CreateDB {
 	    	  			"password CHAR(25) NOT NULL, "  +
 	    	  			"userType CHAR(5) NOT NULL" +
 	    	  			")");
-	         
-	    	  		// INSERT login row 1
-	    	  		stmt.execute("INSERT INTO login " +
-	    	  				"(userName, password, userType) " +
-	    	  				"VALUES ( " +
-	    	  				"'Andrea', " +
-	    	  				"'test', " +
-	    	  				"'ADMIN' )");
-	         
-	    	  		// INSERT login row 2
-	    	  		stmt.execute("INSERT INTO login " +
-	    	  				"(userName, password, userType) " +
-	    	  				"VALUES ( " +
-	    	  				"'Daniel', " +
-	    	  				"'test2', " +
-	    	  				"'USER' )");
-
-	    	  		// INSERT login row 3
-	    	  		stmt.execute("INSERT INTO login " +
-	    	  				"(userName, password, userType) " +
-	    	  				"VALUES ( " +
-	    	  				"'Simon', " +
-	    	  				"'test3', " +
-	    	  				"'ADMIN' )");
 	         
 	    	  		System.out.println("Table login created.");
 			}

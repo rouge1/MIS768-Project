@@ -31,9 +31,9 @@ Although DOT agencies have extensive road safety audit programs based on crash-t
 | **Color-Coded Markers** | Red = Pedestrian crashes, Green = Bicycle crashes |
 | **Date Filtering** | Filter crash data by date range |
 | **Type Filtering** | Toggle pedestrian/cyclist visibility |
-| **Database Integration** | MySQL storage for persistent data |
-| **Role-Based Access** | USER (read-only) vs ADMIN (full CRUD) |
+| **Database Integration** | MySQL storage for persistent crash data |
 | **CSV Import** | Load crash data from CSV files |
+| **Simplified Access** | Single admin user account for full access |
 
 ---
 
@@ -63,6 +63,7 @@ Although DOT agencies have extensive road safety audit programs based on crash-t
 | Language | Java (Swing GUI) |
 | 3D Globe | [NASA WorldWind SDK](https://worldwind.arc.nasa.gov/java/) |
 | Database | MySQL |
+| Graphics | JOGL OpenGL bindings |
 | Date Picker | JDatePicker |
 | Layout | GridBagLayout |
 
@@ -74,23 +75,61 @@ Although DOT agencies have extensive road safety audit programs based on crash-t
 
 - Java JDK 8 or higher
 - MySQL Server
-- Eclipse IDE (recommended)
+- MySQL Connector/J (included in lib/)
+- NVIDIA GPU (recommended for 3D rendering)
+- X11 display server
 
 ### Database Setup
 
-The application automatically creates the database on first run:
+The application uses MySQL for storing crash data:
 
-1. Ensure MySQL is running on `localhost:3306`
-2. Default credentials: `root` / (no password)
-3. Database `aProjectDB` with tables `caseLocations` and `login` will be created
+**Database Credentials:**
+- **Host:** `localhost:3306`
+- **Database:** `aProjectDB`
+- **Username:** `mis768`
+- **Password:** `Password@123`
+
+**Database Structure:**
+
+**`caseLocations` Table:**
+```sql
+CREATE TABLE caseLocations (
+    caseID MEDIUMINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    caseNumber CHAR(25),
+    caseType CHAR(10) NOT NULL,        -- 'PEDESTRIAN' or 'BICYCLE'
+    caseDate DATE NOT NULL,
+    caseLat CHAR(10) NOT NULL,         -- Latitude
+    caseLong CHAR(10) NOT NULL,        -- Longitude
+    caseElev CHAR(10) NOT NULL         -- Elevation
+);
+```
+
+**`login` Table:**
+```sql
+CREATE TABLE login (
+    userID MEDIUMINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    userName CHAR(10) NOT NULL,
+    password CHAR(25) NOT NULL,
+    userType CHAR(5) NOT NULL           -- 'ADMIN' or 'USER'
+);
+```
+
+The application automatically creates these tables on first run via `CreateDB.java`. The login table is created empty - authentication is handled via hardcoded credentials.
 
 ### Running the Application
 
 1. Clone this repository
 2. Open in Eclipse or your preferred Java IDE
 3. Run `MIS_Project.java` as a Java Application
-4. Login with default credentials:
-   - **Admin:** Username: `Andrea`, Password: `test`
+4. Login with credentials:
+   - **Username:** `test`
+   - **Password:** `test`
+   - **Note:** This is the only user account configured in the system
+
+**Note:** For optimal 3D rendering performance, run with NVIDIA GPU acceleration:
+```bash
+__NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia java -cp "bin:lib/*" aProject.MIS_Project
+```
 
 ### CSV Data Format
 
@@ -106,12 +145,12 @@ caseNumber,caseType,date,longitude,latitude,elevation
 
 ## Usage
 
-1. **Login** - Enter credentials to access the application
+1. **Login** - Enter `test`/`test` to access the application
 2. **File > Open** - Load a CSV file with crash data
 3. **View Globe** - Crash locations appear as colored markers
 4. **Click Markers** - View details in the left panel
 5. **Filter Data** - Use date pickers and checkboxes on the right
-6. **Admin Only** - Edit/delete records, upload to database
+6. **Database Upload** - Save crash data to MySQL database for persistence
 
 ---
 
