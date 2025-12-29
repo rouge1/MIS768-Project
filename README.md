@@ -50,8 +50,11 @@ Although DOT agencies have extensive road safety audit programs based on crash-t
 │   ├── CaseType.java       # Enum: BICYCLE, PEDESTRIAN
 │   └── UserLevelType.java  # Enum: USER, ADMIN
 ├── lib/                    # JAR dependencies (WorldWind, JOGL, etc.)
+├── bin/                    # Compiled class files (created during build)
 ├── doc/                    # JavaDoc documentation
-└── resources/              # Military symbols & assets
+├── resources/              # Military symbols & assets
+├── start_app.sh            # Launcher script for NVIDIA GPU acceleration
+└── README.md               # This file
 ```
 
 ---
@@ -89,6 +92,14 @@ The application uses MySQL for storing crash data:
 - **Username:** `mis768`
 - **Password:** `Password@123`
 
+**Setting up MySQL User:**
+If the MySQL user does not exist, create it with the following commands in MySQL:
+```sql
+CREATE USER 'mis768'@'localhost' IDENTIFIED BY 'Password@123';
+GRANT ALL PRIVILEGES ON *.* TO 'mis768'@'localhost';
+FLUSH PRIVILEGES;
+```
+
 **Database Structure:**
 
 **`caseLocations` Table:**
@@ -114,9 +125,21 @@ CREATE TABLE login (
 );
 ```
 
-The application automatically creates these tables on first run via `CreateDB.java`. The login table is created empty - authentication is handled via hardcoded credentials.
+The application automatically creates the `aProjectDB` database and these tables on first run via `CreateDB.java`. The login table is created empty - authentication is handled via hardcoded credentials.
+
+### Building the Application
+
+To compile the application manually:
+
+1. Ensure you have Java JDK installed
+2. Create the bin directory if it doesn't exist: `mkdir -p bin`
+3. Compile all Java sources: `javac -cp "lib/*" -d bin $(find src -name "*.java")`
+
+This will compile all .java files in the src directory and place the class files in the bin directory.
 
 ### Running the Application
+
+#### Option 1: Using an IDE (Eclipse, IntelliJ, etc.)
 
 1. Clone this repository
 2. Open in Eclipse or your preferred Java IDE
@@ -126,9 +149,19 @@ The application automatically creates these tables on first run via `CreateDB.ja
    - **Password:** `test`
    - **Note:** This is the only user account configured in the system
 
+#### Option 2: Manual Compilation and Execution
+
+1. Follow the building steps above to compile the application
+2. Run the application using: `java -cp "bin:lib/*" aProject.MIS_Project`
+
 **Note:** For optimal 3D rendering performance, run with NVIDIA GPU acceleration:
 ```bash
 __NV_PRIME_RENDER_OFFLOAD=1 __GLX_VENDOR_LIBRARY_NAME=nvidia java -cp "bin:lib/*" aProject.MIS_Project
+```
+
+Alternatively, use the provided `start_app.sh` script:
+```bash
+./start_app.sh
 ```
 
 ### CSV Data Format
